@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'VideoLibrary'
-  s.version          = '0.1.1'
+  s.version          = '0.1.2'
   s.summary          = 'The library for iOS apps which helps to implement video lists.'
 
 # This description is used to generate tags and improve search results.
@@ -33,7 +33,7 @@ The point in this implementation is videos can be auto playable and non-auto pla
 
   s.source_files = 'VideoLibrary/Classes/**/*'
   s.resource_bundles = {
-      'VideoLibrary' => ['VideoLibrary/Assets.xcassets/**/*']
+      'VideoLibrary' => ['VideoLibrary/Assets.xcassets']
   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
