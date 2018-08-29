@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'VideoLibrary_Example' do
+  pod 'VideoLibrary', :path => '../'
+
+  target 'VideoLibrary_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
