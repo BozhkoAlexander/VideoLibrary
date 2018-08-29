@@ -1,9 +1,9 @@
 //
 //  ViewController.swift
-//  VideoLibrary
+//  video app
 //
-//  Created by BozhkoAlexander on 08/29/2018.
-//  Copyright (c) 2018 BozhkoAlexander. All rights reserved.
+//  Created by Alexander Bozhko on 10/08/2018.
+//  Copyright © 2018 Filmgrail AS. All rights reserved.
 //
 
 import UIKit
@@ -19,6 +19,7 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
 
 }
 

@@ -1,0 +1,16 @@
+PODS:
+  - VideoLibrary (0.1.0)
+
+DEPENDENCIES:
+  - VideoLibrary (from `../`)
+
+EXTERNAL SOURCES:
+  VideoLibrary:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  VideoLibrary: 177e6ae15d4617c0e189f7575065a357a3b1986a
+
+PODFILE CHECKSUM: ed5b1216702d4181733823f9dbb5a0354dfcb3b3
+
+COCOAPODS: 1.5.3

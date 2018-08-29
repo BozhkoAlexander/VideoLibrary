@@ -1,0 +1,6 @@
+framework module VideoLibrary {
+  umbrella header "VideoLibrary-umbrella.h"
+
+  export *
+  module * { export * }
+}
