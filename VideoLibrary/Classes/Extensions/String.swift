@@ -11,7 +11,8 @@ import UIKit
 extension String {
     
     func boundingRect(with size: CGSize, font: UIFont) -> CGRect {
-        return (self as NSString).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+        let attributes: Dictionary<NSAttributedStringKey, Any> = [.font: font]
+        return (self as NSString).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
     }
     
 }
