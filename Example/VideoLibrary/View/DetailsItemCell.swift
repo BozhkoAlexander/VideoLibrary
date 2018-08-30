@@ -24,13 +24,6 @@ class DetailsItemCell: HomeItemCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /** Send video view from list to details */
-    public func replace(videoView: VideoView) {
-        self.videoView.removeFromSuperview()
-        contentView.addSubview(videoView)
-        self.videoView = videoView
-    }
-    
     // MARK: - Layout
     
     override func layoutSubviews() {
