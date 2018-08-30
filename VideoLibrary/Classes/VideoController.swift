@@ -94,27 +94,27 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     /** Call in collectionView didEndDisplaying */
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let cell = cell as? CollectionVideoCell {
+        if let cell = cell as? VideoCell {
             cell.videoView.videoLayer.player?.pause()
         }
     }
     
     /** Call in collectionView didSelectItemAt */
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionVideoCell else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? VideoCell else { return }
         cell.videoView.setupControlsTimer()
     }
     
     /** Call in tablView didEndDisplaying */
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let cell = cell as? TableVideoCell {
+        if let cell = cell as? VideoCell {
             cell.videoView.videoLayer.player?.pause()
         }
     }
     
     /** Call in tableView didSelectRow */
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? TableVideoCell else { return }
+        guard let cell = tableView.cellForRow(at: indexPath) as? VideoCell else { return }
         cell.videoView.setupControlsTimer()
     }
     
