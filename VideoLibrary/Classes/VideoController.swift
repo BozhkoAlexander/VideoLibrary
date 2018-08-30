@@ -17,8 +17,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     // MARK: - Properties
     
-    weak var collectionView: UICollectionView? = nil
-    weak var tableView: UITableView? = nil
+    weak var scrollView: UIScrollView? = nil
     
     // MARK: - Life cycle
     
@@ -48,25 +47,24 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     @objc func itemDidPlayToEndTime(_ notification: Notification) {
         guard let link = ((notification.object as? AVPlayerItem)?.asset as? AVURLAsset)?.url.absoluteString else { return }
-        Video.shared.finish(link, for: collectionView)
+        Video.shared.finish(link, for: scrollView)
     }
     
     @objc func itemBuffering(_ notification: Notification) {
         guard let container = notification.object as? Video.Container else { return }
-        Video.shared.buffering(container, for: collectionView)
+        Video.shared.buffering(container, for: scrollView)
     }
     
     @objc func itemPlayPressed(_ notification: Notification) {
-        Video.shared.sync(for: collectionView)
+        Video.shared.sync(for: scrollView)
     }
     
     @objc func itemPausePressed(_ notification: Notification) {
         guard let link = notification.object as? String else { return }
-        Video.shared.pause(link, for: collectionView)
+        Video.shared.pause(link, for: scrollView)
     }
     
     @objc func syncVideo() {
-        let scrollView = collectionView ?? tableView
         Video.shared.sync(for: scrollView)
     }
     
@@ -74,8 +72,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     /** Call in viewDidLoad */
     public func setupScrollView(_ scrollView: UIScrollView?) {
-        self.collectionView = scrollView as? UICollectionView
-        self.tableView = scrollView as? UITableView
+        self.scrollView = scrollView
     }
     
     /** Call in viewDidAppear and any other place where needs to resync video. */

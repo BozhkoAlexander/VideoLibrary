@@ -251,11 +251,7 @@ public class Video: NSObject {
     
     /** Sync view after transition */
     public func sync(for viewController: UIViewController?) {
-        guard let videoController = (viewController as? VideoViewController)?.videoController else { return }
-        var scrollView: UIScrollView? = videoController.collectionView
-        if scrollView == nil {
-            scrollView = videoController.tableView
-        }
+        let scrollView = (viewController as? VideoViewController)?.videoController.scrollView
         self.visibleCells(for: scrollView).map({ $0.videoView }).forEach({
             $0.setupControlsTimer()
         })
