@@ -66,7 +66,8 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     }
     
     @objc func syncVideo() {
-        Video.shared.sync(for: collectionView)
+        let scrollView = collectionView ?? tableView
+        Video.shared.sync(for: scrollView)
     }
     
     // MARK: - Feature methods (needs to be called in view controller which support video view)
