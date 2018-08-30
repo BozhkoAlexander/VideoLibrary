@@ -13,11 +13,12 @@ public protocol VideoViewController {
     var videoController: VideoController { get set }
 }
 
-public class VideoController: NSObject, UICollectionViewDelegate {
+public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDelegate {
     
     // MARK: - Properties
     
     weak var collectionView: UICollectionView? = nil
+    weak var tableView: UITableView? = nil
     
     // MARK: - Life cycle
     
@@ -71,8 +72,9 @@ public class VideoController: NSObject, UICollectionViewDelegate {
     // MARK: - Feature methods (needs to be called in view controller which support video view)
     
     /** Call in viewDidLoad */
-    public func setupCollectionView(_ collectionView: UICollectionView?) {
-        self.collectionView = collectionView
+    public func setupScrollView(_ scrollView: UIScrollView?) {
+        self.collectionView = scrollView as? UICollectionView
+        self.tableView = scrollView as? UITableView
     }
     
     /** Call in viewDidAppear and any other place where needs to resync video. */
@@ -92,14 +94,27 @@ public class VideoController: NSObject, UICollectionViewDelegate {
     
     /** Call in collectionView didEndDisplaying */
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let cell = cell as? VideoCell {
+        if let cell = cell as? CollectionVideoCell {
             cell.videoView.videoLayer.player?.pause()
         }
     }
     
     /** Call in collectionView didSelectItemAt */
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? VideoCell else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionVideoCell else { return }
+        cell.videoView.setupControlsTimer()
+    }
+    
+    /** Call in tablView didEndDisplaying */
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let cell = cell as? TableVideoCell {
+            cell.videoView.videoLayer.player?.pause()
+        }
+    }
+    
+    /** Call in tableView didSelectRow */
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? TableVideoCell else { return }
         cell.videoView.setupControlsTimer()
     }
     

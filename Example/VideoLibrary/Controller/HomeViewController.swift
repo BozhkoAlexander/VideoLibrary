@@ -31,7 +31,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         title = "Home"
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Switch", style: .plain, target: self, action: #selector(self.switchPage))
         
-        videoController.setupCollectionView(homeView.collectionView)
+        videoController.setupScrollView(homeView.collectionView)
         
         if #available(iOS 10.0, *) {
             homeView.collectionView?.refreshControl = UIRefreshControl()

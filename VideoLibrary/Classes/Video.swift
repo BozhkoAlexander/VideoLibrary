@@ -9,7 +9,8 @@
 import UIKit
 import AVKit
 
-public typealias VideoCell = UICollectionViewCell & VideoElement
+public typealias CollectionVideoCell = UICollectionViewCell & VideoElement
+public typealias TableVideoCell = UITableViewCell & VideoElement
 
 public class Video: NSObject {
     
@@ -130,14 +131,14 @@ public class Video: NSObject {
     /** Calculate current video in the collection view */
     public func sync(for collectionView: UICollectionView?) {
         guard let collectionView = collectionView else { return }
-        let visibleVideos = collectionView.visibleCells.compactMap({ $0 as? VideoCell })
+        let visibleVideos = collectionView.visibleCells.compactMap({ $0 as? CollectionVideoCell })
         var visibleFrame = collectionView.bounds
         if #available(iOS 11.0, *) {
             visibleFrame = UIEdgeInsetsInsetRect(collectionView.bounds, collectionView.safeAreaInsets)
         }
         let center = round(visibleFrame.midY)
         // calculate current video
-        var result: (delta: CGFloat, cell: VideoCell)? = nil
+        var result: (delta: CGFloat, cell: CollectionVideoCell)? = nil
         // if there is force link (play button pressed)
         if let link = forceVideo, !link.isEmpty {
             if let cell = visibleVideos.filter({ $0.videoView?.videoLink == link }).first {
@@ -148,7 +149,7 @@ public class Video: NSObject {
         }
         // if there is no force link (usual way)
         if result == nil {
-            let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoCell)? in
+            let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: CollectionVideoCell)? in
                 guard let videoFrame = cell.videoView?.frame, cell.videoView?.videoLink != nil else { return nil }
                 let midY = cell.convert(videoFrame, to: collectionView).midY
                 var delta = abs(center - midY)
@@ -188,7 +189,7 @@ public class Video: NSObject {
         self.play(cell, delta: delta, for: collectionView, container: current)
     }
     
-    public func play(_ cell: VideoCell, delta: CGFloat = 0, for collectionView: UICollectionView? = nil, container: Container? = nil) {
+    public func play(_ cell: CollectionVideoCell, delta: CGFloat = 0, for collectionView: UICollectionView? = nil, container: Container? = nil) {
         if let container = container {
             if cell.videoView.autoplay || cell.videoView.videoLink == forceVideo {
                 container.play()
@@ -226,7 +227,7 @@ public class Video: NSObject {
             container.pause()
         }
         guard let collectionView = collectionView else { return }
-        guard let cell = collectionView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLink == link }).first else { return }
+        guard let cell = collectionView.visibleCells.compactMap({ $0 as? CollectionVideoCell }).filter({ $0.videoView.videoLink == link }).first else { return }
         cell.videoView.update(status: .paused, container: nil)
         cell.video(cell, didChangeStatus: .paused, withContainer: nil)
     }
@@ -238,7 +239,7 @@ public class Video: NSObject {
             container.stop()
         }
         guard let collectionView = collectionView else { return }
-        guard let cell = collectionView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLink == link }).first else { return }
+        guard let cell = collectionView.visibleCells.compactMap({ $0 as? CollectionVideoCell }).filter({ $0.videoView.videoLink == link }).first else { return }
         cell.videoView.update(status: .ended, container: nil)
         cell.video(cell, didChangeStatus: .ended, withContainer: nil)
     }
@@ -246,7 +247,7 @@ public class Video: NSObject {
     /** Buffering for a video */
     public func buffering(_ container: Container, for collectionView: UICollectionView?) {
         guard let collectionView = collectionView else { return }
-        guard let cell = collectionView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLayer.player == container.player }).first else { return }
+        guard let cell = collectionView.visibleCells.compactMap({ $0 as? CollectionVideoCell }).filter({ $0.videoView.videoLayer.player == container.player }).first else { return }
         guard let status = container.bufferingStatus() else { return }
         cell.videoView.update(status: status, container: container)
         cell.video(cell, didChangeStatus: status, withContainer: container)
@@ -255,7 +256,7 @@ public class Video: NSObject {
     /** Sync view after transition */
     public func sync(for viewController: UIViewController?) {
         guard let collectionView = (viewController as? VideoViewController)?.videoController.collectionView else { return }
-        collectionView.visibleCells.compactMap({ ($0 as? VideoCell)?.videoView }).forEach({
+        collectionView.visibleCells.compactMap({ ($0 as? CollectionVideoCell)?.videoView }).forEach({
             $0.setupControlsTimer()
         })
         Video.shared.sync(for: collectionView)

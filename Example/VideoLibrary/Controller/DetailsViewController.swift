@@ -47,7 +47,7 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        videoController.setupCollectionView(detailsView.collectionView)
+        videoController.setupScrollView(detailsView.collectionView)
 
         detailsView.closeButton.addTarget(self, action: #selector(self.closePressed(_:)), for: .touchUpInside)
         enabledInteractiveDismissal()
@@ -145,7 +145,7 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         videoController.collectionView(collectionView, didSelectItemAt: indexPath)
-        guard let cell = collectionView.cellForItem(at: indexPath) as? VideoCell else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionVideoCell else { return }
         cell.videoView.setupPauseTimer()
         
     }
