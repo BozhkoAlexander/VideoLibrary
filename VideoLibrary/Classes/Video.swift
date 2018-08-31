@@ -276,6 +276,16 @@ public class Video: NSObject {
         NotificationCenter.default.post(name: .VideoResync, object: nil)
     }
     
+    /** Call when it needs to simulate Pause button press */
+    public func pause() {
+        let playing = loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) }).filter({ $0.player.rate > 0 })
+        playing.forEach({
+            guard let link = ($0.item.asset as? AVURLAsset)?.url.absoluteString else { return }
+            NotificationCenter.default.post(name: .VideoPausePressed, object: link)
+        })
+        
+    }
+    
     // MARK: - Helpers
     
     private func visibleCells(for scrollView: UIScrollView?) -> Array<VideoCell> {
