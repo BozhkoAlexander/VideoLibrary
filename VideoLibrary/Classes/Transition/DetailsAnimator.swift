@@ -137,11 +137,7 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
         if let superview = superview {
             superview.addSubview(senderView)
-            if #available(iOS 11.0, *) {
-                senderView.frame.origin = CGPoint(x: superview.safeAreaInsets.left, y: superview.safeAreaInsets.top)
-            } else {
-                senderView.frame.origin = .zero
-            }
+            senderView.frame = superview.convert(frame, from: nil)
         }
         
         transitionContext.completeTransition(!transitionContext.transitionWasCancelled)

@@ -220,14 +220,18 @@ public class Video: NSObject {
     }
     
     /** Pause video by pressing pause button */
-    public func pause(_ link: String, for scrollView: UIScrollView?) {
+    public func pause(_ link: String, cell: VideoCell? = nil, for scrollView: UIScrollView?) {
         self.forceVideo = nil
         if let container = Cache.videos.object(forKey: link as NSString) {
             container.pause()
         }
-        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLink == link }).first else { return }
-        cell.videoView.update(status: .paused, container: nil)
-        cell.video(cell, didChangeStatus: .paused, withContainer: nil)
+        if let cell = cell {
+            cell.videoView.update(status: .paused, container: nil)
+            cell.video(cell, didChangeStatus: .paused, withContainer: nil)
+        } else if let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLink == link }).first {
+            cell.videoView.update(status: .paused, container: nil)
+            cell.video(cell, didChangeStatus: .paused, withContainer: nil)
+        }
     }
     
     /** Stop video after it ends */

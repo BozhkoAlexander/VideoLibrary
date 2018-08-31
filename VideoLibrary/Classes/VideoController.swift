@@ -92,8 +92,8 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     /** Call in collectionView didEndDisplaying */
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let cell = cell as? VideoCell {
-            cell.videoView.videoLayer.player?.pause()
+        if let cell = cell as? VideoCell, let link = cell.videoView.videoLink {
+            Video.shared.pause(link, cell: cell, for: collectionView)
         }
     }
     
@@ -105,8 +105,8 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     /** Call in tablView didEndDisplaying */
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let cell = cell as? VideoCell {
-            cell.videoView.videoLayer.player?.pause()
+        if let cell = cell as? VideoCell, let link = cell.videoView.videoLink {
+            Video.shared.pause(link, cell: cell, for: tableView)
         }
     }
     
