@@ -139,9 +139,8 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             superview.addSubview(senderView)
             senderView.frame = superview.convert(frame, from: nil)
         }
-        
-        transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         delegate?.finish(using: transitionContext, isPresentation: isPresent)
+        transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     }
     
 }
