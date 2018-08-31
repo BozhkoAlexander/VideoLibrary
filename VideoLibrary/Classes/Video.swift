@@ -226,11 +226,11 @@ public class Video: NSObject {
             container.pause()
         }
         if let cell = cell {
-            cell.videoView.update(status: .paused, container: nil)
-            cell.video(cell, didChangeStatus: .paused, withContainer: nil)
+            cell.videoView.update(status: .stopped, container: nil)
+            cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
         } else if let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLink == link }).first {
-            cell.videoView.update(status: .paused, container: nil)
-            cell.video(cell, didChangeStatus: .paused, withContainer: nil)
+            cell.videoView.update(status: .stopped, container: nil)
+            cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
         }
     }
     
