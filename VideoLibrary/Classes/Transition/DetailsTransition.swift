@@ -33,14 +33,22 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
             startFrame = nil
         }
         let animator = DetailsAnimator(senderView, isPresent: true)
-        animator.delegate = presented as? DetailsAnimatorDelegate
+        if let delegate = presented as? DetailsAnimatorDelegate {
+            animator.delegate = delegate
+        } else if let nc = (presented as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
+            animator.delegate = delegate
+        }
         return animator
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         guard let senderView = senderView else { return nil }
         let animator = DetailsAnimator(senderView, isPresent: false, superview: startSuperview, finalFrame: startFrame, cornerRadius: startCornerRadius)
-        animator.delegate = dismissed as? DetailsAnimatorDelegate
+        if let delegate = dismissed as? DetailsAnimatorDelegate {
+            animator.delegate = delegate
+        } else if let nc = (dismissed as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
+            animator.delegate = delegate
+        }
         return animator
     }
     
