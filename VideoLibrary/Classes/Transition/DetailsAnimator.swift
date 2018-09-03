@@ -18,7 +18,7 @@ public protocol DetailsAnimatorDelegate {
 
 class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
-    private let senderView: VideoView
+    private let senderView: UIView
     private var isPresent: Bool
     private let transitionDuration: TimeInterval = 0.25
     
@@ -28,7 +28,7 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     var delegate: DetailsAnimatorDelegate? = nil
     
-    init(_ senderView: VideoView, isPresent: Bool = true, superview: UIView? = nil, finalFrame: CGRect? = nil, cornerRadius: CGFloat = 0) {
+    init(_ senderView: UIView, isPresent: Bool = true, superview: UIView? = nil, finalFrame: CGRect? = nil, cornerRadius: CGFloat = 0) {
         self.senderView = senderView
         self.isPresent = isPresent
         super.init()

@@ -10,14 +10,22 @@ import UIKit
 
 public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate {
     
+    /** superview of sender view */
     private weak var startSuperview: UIView? = nil
+    
+    /** Start frame of sender view realted to window */
     var startFrame: CGRect? = nil
+    
+    /** Start corenter radius of sender view */
     private var startCornerRadius: CGFloat = 0
     
-    public weak var senderView: VideoView? = nil
+    /** sender view */
+    public weak var senderView: UIView? = nil
+    
+    /** Controller for interactive dismissal */
     var interactionController: DetailsInteractionController? = nil
     
-    public init(_ senderView: VideoView) {
+    public init(_ senderView: UIView) {
         self.senderView = senderView
         super.init()
     }

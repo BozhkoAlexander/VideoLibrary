@@ -87,12 +87,12 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     
     func finish(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool) {
         guard isPresentation || transitionContext.transitionWasCancelled else {
-            if let videoView = (transitioningDelegate as? DetailsTransition)?.senderView {
+            if let videoView = (transitioningDelegate as? DetailsTransition)?.senderView as? VideoView {
                 videoView.stopPauseTimer()
             }
             return
         }
-        if let videoView = (transitioningDelegate as? DetailsTransition)?.senderView {
+        if let videoView = (transitioningDelegate as? DetailsTransition)?.senderView as? VideoView {
             headerView?.replace(videoView: videoView)
             headerView?.setNeedsLayout()
         }
