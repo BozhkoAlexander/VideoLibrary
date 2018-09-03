@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'VideoLibrary'
-  s.version          = '0.1.13'
+  s.version          = '0.1.14'
   s.summary          = 'The library for iOS apps which helps to implement video lists.'
 
 # This description is used to generate tags and improve search results.
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-The library is served to implement auto playable videos in a list (smth between Instagram and Facebook implementation). 
+The library served to implement auto playable videos in a list (smth between Instagram and Facebook implementation). 
 The point in this implementation is videos can be auto playable and non-auto playable (usual videos with play button).
                        DESC
 
