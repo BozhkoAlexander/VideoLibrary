@@ -25,6 +25,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         super.init()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemDidPlayToEndTime(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.playerRouteChanged(_:)), name: .AVAudioSessionRouteChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemBuffering(_:)), name: .VideoBuffered, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemPlayPressed(_:)), name: .VideoPlayPressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemPausePressed(_:)), name: .VideoPausePressed, object: nil)
@@ -37,6 +38,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .AVAudioSessionRouteChange, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoBuffered, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoPlayPressed, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoPausePressed, object: nil)
@@ -48,6 +50,17 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     @objc func itemDidPlayToEndTime(_ notification: Notification) {
         guard let link = ((notification.object as? AVPlayerItem)?.asset as? AVURLAsset)?.url.absoluteString else { return }
         Video.shared.finish(link, for: scrollView)
+    }
+    
+    @objc func playerRouteChanged(_ notification: Notification) {
+        guard let reason = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+            reason == AVAudioSessionRouteChangeReason.oldDeviceUnavailable.rawValue else { return }
+        guard let previousRoute = notification.userInfo?[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription else { return }
+        let port = previousRoute.outputs.first?.portType
+        guard port == AVAudioSessionPortHeadphones else { return }
+        DispatchQueue.main.async {
+            Video.shared.pause()
+        }
     }
     
     @objc func itemBuffering(_ notification: Notification) {
