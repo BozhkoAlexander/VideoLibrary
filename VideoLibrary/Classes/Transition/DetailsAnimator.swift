@@ -106,6 +106,7 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             let finalFrame = transitionContext.finalFrame(for: toVC)
 
             if let videoView = videoView {
+                videoView.layer.cornerRadius = 0
                 let k = finalFrame.width / videoView.frame.width
                 videoView.transform = CGAffineTransform(scaleX: k, y: k)
                 if #available(iOS 11.0, *) {
@@ -128,6 +129,7 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 fromView.transform = CGAffineTransform(scaleX: k, y: k)
                 fromView.frame.origin = finalFrame.origin
                 if let videoView = videoView {
+                    videoView.layer.cornerRadius = cornerRadius
                     videoView.transform = CGAffineTransform(scaleX: k, y: k)
                     videoView.frame.origin = finalFrame.origin
                 }
