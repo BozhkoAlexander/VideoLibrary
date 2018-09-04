@@ -72,7 +72,7 @@ public extension UIViewController {
     
     @objc func handleInteractiveDismissal(_ pan: UIPanGestureRecognizer) {
         guard let transition = transitioningDelegate as? DetailsTransition else { return }
-        let height = transition.fromFrame?.midY ?? 1
+        let height = transition.fromFrame?.midY ?? UIScreen.main.bounds.height
         let point = pan.translation(in: nil)
         let velocity = pan.velocity(in: nil).y
         let progress = min(1, max(0, point.y / height))
