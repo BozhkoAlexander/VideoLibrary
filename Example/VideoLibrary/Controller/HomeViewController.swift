@@ -29,6 +29,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         super.viewDidLoad()
 
         title = "Home"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Random", style: .plain, target: self, action: #selector(self.randomPage))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Switch", style: .plain, target: self, action: #selector(self.switchPage))
         
         videoController.setupScrollView(homeView.collectionView)
@@ -77,6 +78,12 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         AppDelegate.shared.restart()
     }
     
+    @objc func randomPage() {
+        guard let item = items.shuffled().first else { return }
+        let vc = DetailsViewController(item)
+        self.present(vc, animated: true)
+    }
+    
     // MARK: - Collection view delegate & data source
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -97,16 +104,22 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.bounds.width - 36
+        if indexPath.item % 2 == 0 {
+            return CGSize(width: width, height: 64)
+        }
         let height = ceil(9/16 * width)
         return CGSize(width: width, height: height)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.item % 2 == 0 {
+            return collectionView.dequeueReusableCell(withReuseIdentifier: HomeShortCell.cellId, for: indexPath)
+        }
         return collectionView.dequeueReusableCell(withReuseIdentifier: HomeItemCell.cellId, for: indexPath)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? HomeItemCell else { return }
+        guard var cell = cell as? HomeItemElement else { return }
         cell.item = items[indexPath.item]
     }
     
@@ -116,10 +129,14 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         videoController.collectionView(collectionView, didSelectItemAt: indexPath)
-        guard let cell = collectionView.cellForItem(at: indexPath) as? HomeItemCell, let item = cell.item else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? HomeItemElement, let item = cell.item else { return }
         Video.shared.forceVideo = item.video
         
-        let vc = DetailsViewController(item, videoView: cell.videoView)
+        var senderView: UIView! = cell as? UIView
+        if let videoCell = cell as? VideoCell {
+            senderView = videoCell.videoView
+        }
+        let vc = DetailsViewController(item, senderView: senderView)
         self.present(vc, animated: true)
     }
 

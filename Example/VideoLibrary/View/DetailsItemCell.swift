@@ -17,6 +17,7 @@ class DetailsItemCell: HomeItemCell {
         super.init(frame: frame)
         
         layer.cornerRadius = 0
+        videoView.layer.cornerRadius = 0
         clipsToBounds = false
     }
     

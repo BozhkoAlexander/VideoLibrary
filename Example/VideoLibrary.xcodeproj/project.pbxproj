@@ -11,6 +11,7 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		AADCD76209AA5B984F1E46D5 /* Pods_VideoLibrary_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 092091835E362D88EAFF4742 /* Pods_VideoLibrary_Example.framework */; };
+		FA56ED34213E539C00506955 /* HomeShortCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA56ED33213E539C00506955 /* HomeShortCell.swift */; };
 		FA61AC3F2136962100DE7312 /* HomeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC272136962000DE7312 /* HomeItem.swift */; };
 		FA61AC402136962100DE7312 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC292136962000DE7312 /* Cache.swift */; };
 		FA61AC412136962100DE7312 /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC2A2136962000DE7312 /* Images.swift */; };
@@ -56,6 +57,7 @@
 		9F25E3FAD11DB7EC6D2F3941 /* Pods-VideoLibrary_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoLibrary_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VideoLibrary_Example/Pods-VideoLibrary_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		C38C074058ECE9698F6BA761 /* Pods_VideoLibrary_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoLibrary_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D857578ECF484D9289E2FE4A /* VideoLibrary.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = VideoLibrary.podspec; path = ../VideoLibrary.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		FA56ED33213E539C00506955 /* HomeShortCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeShortCell.swift; sourceTree = "<group>"; };
 		FA61AC272136962000DE7312 /* HomeItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeItem.swift; sourceTree = "<group>"; };
 		FA61AC292136962000DE7312 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		FA61AC2A2136962000DE7312 /* Images.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
@@ -217,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				FA61AC302136962000DE7312 /* HomeItemCell.swift */,
+				FA56ED33213E539C00506955 /* HomeShortCell.swift */,
 				FA61AC312136962000DE7312 /* DetailsView.swift */,
 				FA61AC322136962000DE7312 /* HomeView.swift */,
 				FA61AC332136962000DE7312 /* DetailsItemCell.swift */,
@@ -412,6 +415,7 @@
 				FA61AC472136962100DE7312 /* HomeView.swift in Sources */,
 				FA61AC822136A83E00DE7312 /* AppDelegate.swift in Sources */,
 				FA61AC4A2136962100DE7312 /* UICollectionViewCell.swift in Sources */,
+				FA56ED34213E539C00506955 /* HomeShortCell.swift in Sources */,
 				FA61AC3F2136962100DE7312 /* HomeItem.swift in Sources */,
 				FA61AC412136962100DE7312 /* Images.swift in Sources */,
 				FA61AC4D2136962100DE7312 /* DetailsViewController.swift in Sources */,

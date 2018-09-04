@@ -11,7 +11,13 @@ import AVKit
 
 import VideoLibrary
 
-class HomeItemCell: UICollectionViewCell, VideoElement {
+public protocol HomeItemElement {
+    
+    var item: HomeItem? { get set }
+    
+}
+
+class HomeItemCell: UICollectionViewCell, HomeItemElement, VideoElement {
 
     // MARK: - Binding
     

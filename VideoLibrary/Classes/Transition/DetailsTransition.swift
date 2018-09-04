@@ -14,33 +14,28 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
     private weak var startSuperview: UIView? = nil
     
     /** Start frame of sender view realted to window */
-    var startFrame: CGRect? = nil
+    var fromFrame: CGRect? = nil
     
     /** Start corenter radius of sender view */
-    private var startCornerRadius: CGFloat = 0
+    private var fromRadius: CGFloat = 0
     
     /** sender view */
-    public weak var senderView: UIView? = nil
+    public var videoView: VideoView! = nil
     
     /** Controller for interactive dismissal */
     var interactionController: DetailsInteractionController? = nil
     
-    public init(_ senderView: UIView) {
-        self.senderView = senderView
+    public init(_ senderView: UIView?) {
+        videoView = senderView as? VideoView
+        startSuperview = senderView?.superview
+        fromFrame = senderView?.superview?.convert(senderView!.frame, to: nil)
+        fromRadius = senderView?.layer.cornerRadius ?? 0
+
         super.init()
     }
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let senderView = senderView else { return nil }
-        startCornerRadius = senderView.layer.cornerRadius
-        if let superview = senderView.superview {
-            startSuperview = superview
-            startFrame = senderView.superview!.convert(senderView.frame, to: nil)
-        } else {
-            startSuperview = nil
-            startFrame = nil
-        }
-        let animator = DetailsAnimator(senderView, isPresent: true)
+        let animator = DetailsAnimator(videoView, isPresent: true, fromFrame: fromFrame, fromRadius: fromRadius)
         if let delegate = presented as? DetailsAnimatorDelegate {
             animator.delegate = delegate
         } else if let nc = (presented as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
@@ -50,8 +45,7 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let senderView = senderView else { return nil }
-        let animator = DetailsAnimator(senderView, isPresent: false, superview: startSuperview, finalFrame: startFrame, cornerRadius: startCornerRadius)
+        let animator = DetailsAnimator(videoView, isPresent: false, superview: startSuperview, fromFrame: fromFrame, fromRadius: fromRadius)
         if let delegate = dismissed as? DetailsAnimatorDelegate {
             animator.delegate = delegate
         } else if let nc = (dismissed as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
@@ -78,7 +72,7 @@ public extension UIViewController {
     
     @objc func handleInteractiveDismissal(_ pan: UIPanGestureRecognizer) {
         guard let transition = transitioningDelegate as? DetailsTransition else { return }
-        let height = transition.startFrame?.midY ?? 1
+        let height = transition.fromFrame?.midY ?? 1
         let point = pan.translation(in: nil)
         let velocity = pan.velocity(in: nil).y
         let progress = min(1, max(0, point.y / height))

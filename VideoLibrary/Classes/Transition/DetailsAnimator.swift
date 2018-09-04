@@ -18,24 +18,24 @@ public protocol DetailsAnimatorDelegate {
 
 class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
-    private let senderView: UIView
+    private var videoView: VideoView? = nil
     private var isPresent: Bool
     private let transitionDuration: TimeInterval = 0.25
     
     private weak var superview: UIView? = nil
-    private var finalFrame: CGRect? = nil
+    private var fromFrame: CGRect? = nil
     private var cornerRadius: CGFloat = 0
     
     var delegate: DetailsAnimatorDelegate? = nil
     
-    init(_ senderView: UIView, isPresent: Bool = true, superview: UIView? = nil, finalFrame: CGRect? = nil, cornerRadius: CGFloat = 0) {
-        self.senderView = senderView
+    init(_ senderView: VideoView?, isPresent: Bool = true, superview: UIView? = nil, fromFrame: CGRect? = nil, fromRadius: CGFloat? = nil) {
+        self.videoView = senderView
         self.isPresent = isPresent
         super.init()
         
         self.superview = superview
-        self.finalFrame = finalFrame
-        self.cornerRadius = cornerRadius
+        self.fromFrame = fromFrame
+        self.cornerRadius = fromRadius ?? 0
     }
     
     // MARK: - Animated transitioning
@@ -48,11 +48,10 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         prepare(using: transitionContext)
         let delegate = self.delegate
         let isPresent = self.isPresent
-        let senderView = self.senderView
+        let senderView = self.videoView
         let superview = self.superview
         
-        UIView.animate(withDuration: transitionDuration, animations: {
-            [weak self] in
+        UIView.animate(withDuration: transitionDuration, delay: 0, options: .curveEaseInOut, animations: { [weak self] in
             self?.animate(using: transitionContext)
         }) { (completed) in
             DetailsAnimator.finish(using: transitionContext, senderView: senderView, superview: superview, isPresent: isPresent, delegate: delegate)
@@ -66,20 +65,32 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let fromView = transitionContext.viewController(forKey: .from)!.view!
         let toVC = transitionContext.viewController(forKey: .to)!
         let toView = toVC.view!
-
-        senderView.frame = senderView.superview!.convert(senderView.frame, to: fromView)
+        
+        if let frame = videoView?.superview?.convert(videoView!.frame, to: fromView) {
+            videoView?.frame = frame
+        }
         toView.frame = transitionContext.finalFrame(for: toVC)
         
         if isPresent {
             containerView.addSubview(toView)
-            toView.frame.origin.y = senderView.frame.minY
+            if let frame = fromFrame {
+                toView.frame = frame
+            } else if let videoView = videoView {
+               toView.frame.origin.y = videoView.frame.minY
+            } else {
+                toView.frame.origin.y = UIScreen.main.bounds.height
+            }
+            toView.clipsToBounds = true
+            toView.layer.cornerRadius = cornerRadius
             toView.alpha = 0
             
             // add blur to fromview
             fromView.addBlurView()
         }
         
-        containerView.addSubview(senderView)
+        if videoView != nil {
+            containerView.addSubview(videoView!)
+        }
         
         delegate?.prepare(using: transitionContext, isPresentation: isPresent)
     }
@@ -89,56 +100,66 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let toVC = transitionContext.viewController(forKey: .to)!
         let toView = toVC.view!
         
-        senderView.layer.cornerRadius = cornerRadius
+        videoView?.layer.cornerRadius = cornerRadius
 
         if isPresent {
-            toView.layer.cornerRadius = cornerRadius
-            toView.clipsToBounds = true
             let finalFrame = transitionContext.finalFrame(for: toVC)
-            let k = finalFrame.width / senderView.frame.width
-            senderView.transform = CGAffineTransform(scaleX: k, y: k)
-            if #available(iOS 11.0, *) {
-                senderView.frame.origin = CGPoint(x: toView.safeAreaInsets.left, y: toView.safeAreaInsets.top)
-            } else {
-                senderView.frame.origin = .zero
+
+            if let videoView = videoView {
+                let k = finalFrame.width / videoView.frame.width
+                videoView.transform = CGAffineTransform(scaleX: k, y: k)
+                if #available(iOS 11.0, *) {
+                    videoView.frame.origin = CGPoint(x: toView.safeAreaInsets.left, y: toView.safeAreaInsets.top)
+                } else {
+                    videoView.frame.origin = .zero
+                }
             }
+            
+            toView.layer.cornerRadius = 0
             toView.frame = finalFrame
             toView.alpha = 1
             fromView.enableBlur()
         } else {
             fromView.layer.cornerRadius = cornerRadius
             fromView.clipsToBounds = true
-            if let finalFrame = finalFrame {
-                let k = finalFrame.width / senderView.frame.width
-                senderView.transform = CGAffineTransform(scaleX: k, y: k)
-                senderView.frame.origin = finalFrame.origin
-                fromView.transform = CGAffineTransform(scaleX: k, y: k)
-            }
-            fromView.frame.origin.y = senderView.frame.minY
-            fromView.frame.origin.x = senderView.frame.minX
             fromView.alpha = 0
+            if let finalFrame = fromFrame {
+                let k = finalFrame.width / fromView.frame.width
+                fromView.transform = CGAffineTransform(scaleX: k, y: k)
+                fromView.frame.origin = finalFrame.origin
+                if let videoView = videoView {
+                    videoView.transform = CGAffineTransform(scaleX: k, y: k)
+                    videoView.frame.origin = finalFrame.origin
+                }
+            } else {
+                fromView.frame.origin.y = UIScreen.main.bounds.height
+                fromView.frame.origin.x = 0
+            }
+
             toView.disableBlur()
         }
         
         delegate?.animate(using: transitionContext, isPresentation: isPresent)
     }
     
-    class func finish(using transitionContext: UIViewControllerContextTransitioning, senderView: UIView, superview: UIView?, isPresent: Bool, delegate: DetailsAnimatorDelegate?) {
+    class func finish(using transitionContext: UIViewControllerContextTransitioning, senderView: VideoView?, superview: UIView?, isPresent: Bool, delegate: DetailsAnimatorDelegate?) {
         let toView = transitionContext.viewController(forKey: .to)!.view!
         
-        // remove blur
         if !isPresent {
+            // remove blur
             toView.removeBlurView()
         }
-
-        let frame = senderView.frame
-        senderView.transform = CGAffineTransform.identity
-        senderView.frame = frame
         
-        if let superview = superview {
-            superview.addSubview(senderView)
-            senderView.frame = superview.convert(frame, from: nil)
+        if let videoVidew = senderView {
+            let frame = videoVidew.frame
+            videoVidew.transform = CGAffineTransform.identity
+            videoVidew.frame = frame
+            if let superview = superview {
+                superview.addSubview(videoVidew)
+                videoVidew.frame = superview.convert(frame, from: nil)
+            }
         }
+        
         delegate?.finish(using: transitionContext, isPresentation: isPresent)
         transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     }

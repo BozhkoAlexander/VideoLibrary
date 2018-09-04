@@ -26,12 +26,11 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     
     // MARK: - Life cycle
     
-    init(_ item: HomeItem, videoView: VideoView? = nil) {
+    init(_ item: HomeItem, senderView: UIView? = nil) {
         self.item = item
         super.init(nibName: nil, bundle: nil)
         
-        guard let videoView = videoView else { return }
-        self.transition = DetailsTransition(videoView)
+        self.transition = DetailsTransition(senderView)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = self.transition
     }
@@ -87,12 +86,12 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     
     func finish(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool) {
         guard isPresentation || transitionContext.transitionWasCancelled else {
-            if let videoView = (transitioningDelegate as? DetailsTransition)?.senderView as? VideoView {
+            if let videoView = (transitioningDelegate as? DetailsTransition)?.videoView {
                 videoView.stopPauseTimer()
             }
             return
         }
-        if let videoView = (transitioningDelegate as? DetailsTransition)?.senderView as? VideoView {
+        if let videoView = (transitioningDelegate as? DetailsTransition)?.videoView {
             headerView?.replace(videoView: videoView)
             headerView?.setNeedsLayout()
         }

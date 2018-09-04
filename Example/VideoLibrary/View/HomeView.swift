@@ -23,6 +23,7 @@ class HomeView: UIView {
         view.contentInset = UIEdgeInsets(top: 18, left: 0, bottom: 18, right: 0)
         
         view.register(HomeItemCell.self, forCellWithReuseIdentifier: HomeItemCell.cellId)
+        view.register(HomeShortCell.self, forCellWithReuseIdentifier: HomeShortCell.cellId)
         
         view.delegate = delegate
         view.dataSource = delegate
