@@ -20,7 +20,7 @@ class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     private var videoView: VideoView? = nil
     private var isPresent: Bool
-    private let transitionDuration: TimeInterval = 0.25
+    private let transitionDuration: TimeInterval = 0.35
     
     private weak var superview: UIView? = nil
     private var fromFrame: CGRect? = nil
