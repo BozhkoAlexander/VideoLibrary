@@ -17,6 +17,9 @@ extension DetailsTransition {
         /** This view is used for animated video view transfer */
         private var videoView: VideoView? = nil
         
+        /** Delegate for additional animations during the transition */
+        public var delegate: DetailsAnimatorDelegate? = nil
+        
         private let moveDuration: TimeInterval = 0.35
         private let expandDuration: TimeInterval = 0.35
         
@@ -34,11 +37,12 @@ extension DetailsTransition {
         
         func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
             let videoView = self.videoView
+            let delegate = self.delegate
             
             prepare(using: transitionContext)
             animate(using: transitionContext) {
                 transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-                PresentAnimator.complete(using: transitionContext, videoView: videoView)
+                PresentAnimator.complete(using: transitionContext, videoView: videoView, delegate: delegate)
             }
         }
         
@@ -49,7 +53,11 @@ extension DetailsTransition {
                 let fromVC = context.viewController(forKey: .from),
                 let toVC = context.viewController(forKey: .to),
                 let fromView = fromVC.view,
-                let toView = toVC.view else { return }
+                let toView = toVC.view else {
+                    context.completeTransition(false)
+                    return
+            }
+            delegate?.prepare(using: context, isPresentation: true)
             let container = context.containerView
             container.clipsToBounds = true
             
@@ -78,6 +86,7 @@ extension DetailsTransition {
         }
         
         private func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
+            delegate?.animate(using: context, isPresentation: true)
             UIView.animate(withDuration: moveDuration, delay: 0, options: .curveEaseIn, animations: { [weak self] in
                 self?.move(using: context)
                 }, completion: nil)
@@ -93,7 +102,10 @@ extension DetailsTransition {
                 let fromVC = context.viewController(forKey: .from),
                 let toVC = context.viewController(forKey: .to),
                 let fromView = fromVC.view,
-                let toView = toVC.view else { return }
+                let toView = toVC.view else {
+                    context.completeTransition(false)
+                    return
+            }
             
             // move members
             if sender != nil {
@@ -121,13 +133,15 @@ extension DetailsTransition {
         private func expand(using context: UIViewControllerContextTransitioning) {
             guard
                 let toVC = context.viewController(forKey: .to),
-                let toView = toVC.view else { return }
+                let toView = toVC.view else {
+                    context.completeTransition(false)
+                    return
+            }
             let container = context.containerView
             let finalFrame = context.finalFrame(for: toVC)
             
             let k = finalFrame.width / toView.frame.width
             let transform = toView.transform.scaledBy(x: k, y: k)
-            toView.transform = transform
             videoView?.transform = transform
             
             // apply properties to members
@@ -137,8 +151,16 @@ extension DetailsTransition {
             toView.frame = context.finalFrame(for: toVC)
         }
         
-        private class func complete(using context: UIViewControllerContextTransitioning, videoView: VideoView?) {
+        private class func complete(using context: UIViewControllerContextTransitioning, videoView: VideoView?, delegate: DetailsAnimatorDelegate?) {
+            // normalize transform
+            if let videoView = videoView {
+                let frame = videoView.frame
+                videoView.transform = .identity
+                videoView.frame = frame
+            }
+            
             videoView?.removeFromSuperview()
+            delegate?.finish(using: context, isPresentation: true)
         }
         
     }

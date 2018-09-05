@@ -29,6 +29,7 @@
 		FA7B7439213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B7438213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift */; };
 		FA7B743B213FC3A00011E1D5 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B743A213FC3A00011E1D5 /* UIView.swift */; };
 		FA7B743D213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B743C213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift */; };
+		FA7B743F213FE6B00011E1D5 /* DetailsAnimatorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B743E213FE6B00011E1D5 /* DetailsAnimatorDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 		FA7B7438213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailsTransition+PresentAnimator.swift"; sourceTree = "<group>"; };
 		FA7B743A213FC3A00011E1D5 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		FA7B743C213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailsTransition+DismissAnimator.swift"; sourceTree = "<group>"; };
+		FA7B743E213FE6B00011E1D5 /* DetailsAnimatorDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsAnimatorDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +277,7 @@
 				FA7B743C213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift */,
 				FA61AC6D2136A23D00DE7312 /* DetailsAnimator.swift */,
 				FA61AC6E2136A23D00DE7312 /* DetailsInteractionController.swift */,
+				FA7B743E213FE6B00011E1D5 /* DetailsAnimatorDelegate.swift */,
 			);
 			path = Transition;
 			sourceTree = "<group>";
@@ -454,6 +457,7 @@
 				400BD91FA8182795AB805CF1C6970652 /* VideoLibrary-dummy.m in Sources */,
 				FA7B743B213FC3A00011E1D5 /* UIView.swift in Sources */,
 				FA61AC7E2136A23E00DE7312 /* VideoController.swift in Sources */,
+				FA7B743F213FE6B00011E1D5 /* DetailsAnimatorDelegate.swift in Sources */,
 				FA61AC7B2136A23E00DE7312 /* VideoView.swift in Sources */,
 				FA7B7439213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift in Sources */,
 				FA61AC772136A23E00DE7312 /* DetailsTransition.swift in Sources */,

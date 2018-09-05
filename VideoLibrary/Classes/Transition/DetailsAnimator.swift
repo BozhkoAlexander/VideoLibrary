@@ -8,14 +8,6 @@
 
 import UIKit
 
-public protocol DetailsAnimatorDelegate {
-    
-    func prepare(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool)
-    func animate(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool)
-    func finish(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool)
-    
-}
-
 class DetailsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     private var videoView: VideoView? = nil

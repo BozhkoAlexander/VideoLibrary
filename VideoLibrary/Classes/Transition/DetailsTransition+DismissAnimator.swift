@@ -17,13 +17,17 @@ extension DetailsTransition {
         /** This view is used for animated video view transfer */
         private var videoView: VideoView? = nil
         
+        /** Frame for video view which it has before presentation */
+        private var finalFrame: CGRect? = nil
+        
         private let moveDuration: TimeInterval = 0.35
         private let collapseDuration: TimeInterval = 0.35
         
-        init(videoView: VideoView?, sender: UIView?) {
+        init(videoView: VideoView?, sender: UIView?, finalFrame: CGRect?) {
             super.init()
             self.videoView = videoView
             self.sender = sender
+            self.finalFrame = finalFrame
         }
         
         // MARK: - Transitioning context
