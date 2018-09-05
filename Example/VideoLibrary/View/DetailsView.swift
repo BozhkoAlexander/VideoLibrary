@@ -18,13 +18,15 @@ class DetailsView: UIView {
     private func setupCollectionView(for delegate: UICollectionViewDelegate & UICollectionViewDataSource) {
         let layout = UICollectionViewFlowLayout()
         let view = UICollectionView(frame: bounds, collectionViewLayout: layout)
-        view.backgroundColor = .green//.groupTableViewBackground
+        view.backgroundColor = .brown
         
         if #available(iOS 11.0, *) {
             view.contentInsetAdjustmentBehavior = .never
         }
                 
         view.register(DetailsItemCell.self, forCellWithReuseIdentifier: DetailsItemCell.cellId)
+        
+        view.alwaysBounceVertical = true
         
         view.delegate = delegate
         view.dataSource = delegate

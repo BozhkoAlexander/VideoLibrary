@@ -30,10 +30,10 @@ class HomeItemCell: UICollectionViewCell, HomeItemElement, VideoElement {
         didSet {
             guard item != oldValue else { return }
             imageObservation = item?.observe(\.image, options: .initial, changeHandler: { [weak self] (item, _) in
-                self?.videoView.setImage(item.image)
+                self?.videoView?.setImage(item.image)
             })
             videoObservation = item?.observe(\.video, options: .initial, changeHandler: { [weak self] (item, _) in
-                self?.videoView.setVideo(item.video, autoplay: item.autoplay)
+                self?.videoView?.setVideo(item.video, autoplay: item.autoplay)
             })
         }
     }

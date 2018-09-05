@@ -26,11 +26,11 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     
     // MARK: - Life cycle
     
-    init(_ item: HomeItem, senderView: UIView? = nil) {
+    init(_ item: HomeItem, sender: UIView?, videoView: VideoView? = nil) {
         self.item = item
         super.init(nibName: nil, bundle: nil)
         
-        self.transition = DetailsTransition(senderView)
+        self.transition = DetailsTransition(sender: sender, videoView: videoView)
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = self.transition
     }

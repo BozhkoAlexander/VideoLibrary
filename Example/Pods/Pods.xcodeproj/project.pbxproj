@@ -26,6 +26,9 @@
 		FA61AC7E2136A23E00DE7312 /* VideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC742136A23D00DE7312 /* VideoController.swift */; };
 		FA61AC7F2136A23E00DE7312 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC752136A23D00DE7312 /* Cache.swift */; };
 		FA61AC802136A23E00DE7312 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC762136A23D00DE7312 /* Video.swift */; };
+		FA7B7439213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B7438213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift */; };
+		FA7B743B213FC3A00011E1D5 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B743A213FC3A00011E1D5 /* UIView.swift */; };
+		FA7B743D213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B743C213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +93,9 @@
 		FA61AC742136A23D00DE7312 /* VideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoController.swift; sourceTree = "<group>"; };
 		FA61AC752136A23D00DE7312 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		FA61AC762136A23D00DE7312 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
+		FA7B7438213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailsTransition+PresentAnimator.swift"; sourceTree = "<group>"; };
+		FA7B743A213FC3A00011E1D5 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
+		FA7B743C213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailsTransition+DismissAnimator.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -265,6 +271,8 @@
 			isa = PBXGroup;
 			children = (
 				FA61AC6C2136A23D00DE7312 /* DetailsTransition.swift */,
+				FA7B7438213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift */,
+				FA7B743C213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift */,
 				FA61AC6D2136A23D00DE7312 /* DetailsAnimator.swift */,
 				FA61AC6E2136A23D00DE7312 /* DetailsInteractionController.swift */,
 			);
@@ -275,6 +283,7 @@
 			isa = PBXGroup;
 			children = (
 				FA61AC722136A23D00DE7312 /* String.swift */,
+				FA7B743A213FC3A00011E1D5 /* UIView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -443,10 +452,13 @@
 				FA61AC7F2136A23E00DE7312 /* Cache.swift in Sources */,
 				FA61AC7D2136A23E00DE7312 /* Video+Container.swift in Sources */,
 				400BD91FA8182795AB805CF1C6970652 /* VideoLibrary-dummy.m in Sources */,
+				FA7B743B213FC3A00011E1D5 /* UIView.swift in Sources */,
 				FA61AC7E2136A23E00DE7312 /* VideoController.swift in Sources */,
 				FA61AC7B2136A23E00DE7312 /* VideoView.swift in Sources */,
+				FA7B7439213FBF790011E1D5 /* DetailsTransition+PresentAnimator.swift in Sources */,
 				FA61AC772136A23E00DE7312 /* DetailsTransition.swift in Sources */,
 				FA61AC782136A23E00DE7312 /* DetailsAnimator.swift in Sources */,
+				FA7B743D213FE0E90011E1D5 /* DetailsTransition+DismissAnimator.swift in Sources */,
 				FA61AC792136A23E00DE7312 /* DetailsInteractionController.swift in Sources */,
 				FA61AC802136A23E00DE7312 /* Video.swift in Sources */,
 			);

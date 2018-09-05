@@ -130,7 +130,7 @@ public class Video: NSObject {
     /** Calculate current video in the collection view */
     public func sync(for scrollView: UIScrollView?) {
         guard let scrollView = scrollView else { return }
-        let visibleVideos = self.visibleCells(for: scrollView)
+        let visibleVideos = self.visibleCells(for: scrollView).filter({ $0.videoView != nil })
         var visibleFrame = scrollView.bounds
         if #available(iOS 11.0, *) {
             visibleFrame = UIEdgeInsetsInsetRect(scrollView.bounds, scrollView.safeAreaInsets)
@@ -242,14 +242,14 @@ public class Video: NSObject {
         if let container = Cache.videos.object(forKey: link as NSString) {
             container.stop()
         }
-        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLink == link }).first else { return }
+        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLink == link }).first else { return }
         cell.videoView.update(status: .ended, container: nil)
         cell.video(cell, didChangeStatus: .ended, withContainer: nil)
     }
     
     /** Buffering for a video */
     public func buffering(_ container: Container, for scrollView: UIScrollView?) {
-        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLayer.player == container.player }).first else { return }
+        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLayer.player == container.player }).first else { return }
         guard let status = container.bufferingStatus() else { return }
         cell.videoView.update(status: status, container: container)
         cell.video(cell, didChangeStatus: status, withContainer: container)
@@ -258,7 +258,7 @@ public class Video: NSObject {
     /** Sync view after transition */
     public func sync(for viewController: UIViewController?) {
         let scrollView = (viewController as? VideoViewController)?.videoController.scrollView
-        self.visibleCells(for: scrollView).map({ $0.videoView }).forEach({
+        self.visibleCells(for: scrollView).compactMap({ $0.videoView }).forEach({
             $0.setupControlsTimer()
         })
         Video.shared.sync(for: scrollView)

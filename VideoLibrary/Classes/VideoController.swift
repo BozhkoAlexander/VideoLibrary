@@ -13,7 +13,7 @@ public protocol VideoViewController {
     var videoController: VideoController { get set }
 }
 
-public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDelegate {
+public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDelegate, UIGestureRecognizerDelegate {
     
     // MARK: - Properties
     
@@ -81,6 +81,12 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         Video.shared.sync(for: scrollView)
     }
     
+    // MARK: - Gesture reocgnizer delegate
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
     // MARK: - Feature methods (needs to be called in view controller which support video view)
     
     /** Call in viewDidLoad */
@@ -105,7 +111,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     /** Call in collectionView didEndDisplaying */
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let cell = cell as? VideoCell, let link = cell.videoView.videoLink {
+        if let cell = cell as? VideoCell, let link = cell.videoView?.videoLink {
             Video.shared.pause(link, cell: cell, for: collectionView)
         }
     }
@@ -113,7 +119,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     /** Call in collectionView didSelectItemAt */
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? VideoCell else { return }
-        cell.videoView.setupControlsTimer()
+        cell.videoView?.setupControlsTimer()
     }
     
     /** Call in tablView didEndDisplaying */

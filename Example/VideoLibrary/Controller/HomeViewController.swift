@@ -80,7 +80,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     
     @objc func randomPage() {
         guard let item = items.shuffled().first else { return }
-        let vc = DetailsViewController(item)
+        let vc = DetailsViewController(item, sender: nil)
         self.present(vc, animated: true)
     }
     
@@ -132,11 +132,8 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         guard let cell = collectionView.cellForItem(at: indexPath) as? HomeItemElement, let item = cell.item else { return }
         Video.shared.forceVideo = item.video
         
-        var senderView: UIView! = cell as? UIView
-        if let videoCell = cell as? VideoCell {
-            senderView = videoCell.videoView
-        }
-        let vc = DetailsViewController(item, senderView: senderView)
+        let videoCell = cell as? VideoCell
+        let vc = DetailsViewController(item, sender: videoCell, videoView: videoCell?.videoView)
         self.present(vc, animated: true)
     }
 
