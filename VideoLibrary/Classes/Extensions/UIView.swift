@@ -41,7 +41,11 @@ extension UIView {
     
     /** Apply properties from one view to sedond */
     func applyProperties(from view: UIView?) {
-        guard let view = view else { return }
+        guard let view = view else {
+            clipsToBounds = true
+            layer.cornerRadius = 10
+            return
+        }
         clipsToBounds = view.clipsToBounds
         layer.cornerRadius = view.layer.cornerRadius
     }

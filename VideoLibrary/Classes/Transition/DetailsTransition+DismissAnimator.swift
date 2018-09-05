@@ -79,10 +79,10 @@ extension DetailsTransition {
         
         private func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
             delegate?.animate(using: context, isPresentation: false)
-            UIView.animate(withDuration: collapseDuration, delay: 0, options: .curveEaseIn, animations: { [weak self] in
+            UIView.animate(withDuration: collapseDuration, delay: 0, options: .curveEaseOut, animations: { [weak self] in
                 self?.collapse(using: context)
                 }, completion: nil)
-            UIView.animate(withDuration: moveDuration, delay: collapseDuration, options: .curveEaseOut, animations: { [weak self] in
+            UIView.animate(withDuration: moveDuration, delay: collapseDuration, options: .curveEaseIn, animations: { [weak self] in
                 self?.move(using: context)
             }) { _ in
                 completion?()
@@ -107,6 +107,10 @@ extension DetailsTransition {
                 videoView.frame.origin.y += round((1 - k) * 0.5 * videoView.bounds.height)
                 
                 fromView.mask?.frame = videoView.frame
+            } else {
+                let center = fromView.center
+                fromView.transform = fromView.transform.scaledBy(x: 0.9, y: 0.9)
+                fromView.center = center
             }
             
             //apply properties to members
@@ -126,6 +130,8 @@ extension DetailsTransition {
             if let finalFrame = finalFrame {
                 videoView?.frame = finalFrame
                 fromView.mask?.frame = finalFrame
+            } else {
+                fromView.frame.origin.y = context.containerView.frame.maxY
             }
             // disable blur
             toView.disableBlur()

@@ -133,7 +133,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         Video.shared.forceVideo = item.video
         
         let videoCell = cell as? VideoCell
-        let vc = DetailsViewController(item, sender: videoCell, videoView: videoCell?.videoView)
+        let vc = DetailsViewController(item, sender: cell as? UIView, videoView: videoCell?.videoView)
         self.present(vc, animated: true)
     }
 

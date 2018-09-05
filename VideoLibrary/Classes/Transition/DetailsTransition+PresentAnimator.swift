@@ -64,11 +64,8 @@ extension DetailsTransition {
             // calculate initial frame
             var initialFrame: CGRect! = videoView?.superview?.convert(videoView!.frame, to: container)
             if initialFrame == nil {
-                initialFrame = sender?.superview?.convert(sender!.frame, to: container)
-                if initialFrame == nil {
-                    initialFrame = context.finalFrame(for: toVC)
-                    initialFrame.origin.y = initialFrame.maxY
-                }
+                initialFrame = context.finalFrame(for: toVC)
+                initialFrame.origin.y = initialFrame.maxY
             }
             toView.frame = initialFrame
             videoView?.frame = initialFrame
@@ -79,7 +76,13 @@ extension DetailsTransition {
             
             // add members to transition container
             container.addSubview(toView)
-            if let videoView = videoView { container.addSubview(videoView) }
+            if let videoView = videoView {
+                container.addSubview(videoView)
+            } else {
+                let center = toView.center
+                toView.transform = toView.transform.scaledBy(x: 0.9, y: 0.9)
+                toView.center = center
+            }
             
             //add blur
             fromView.addBlurView()
@@ -87,10 +90,10 @@ extension DetailsTransition {
         
         private func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
             delegate?.animate(using: context, isPresentation: true)
-            UIView.animate(withDuration: moveDuration, delay: 0, options: .curveEaseIn, animations: { [weak self] in
+            UIView.animate(withDuration: moveDuration, delay: 0, options: .curveEaseOut, animations: { [weak self] in
                 self?.move(using: context)
                 }, completion: nil)
-            UIView.animate(withDuration: expandDuration, delay: moveDuration, options: .curveEaseOut, animations: { [weak self] in
+            UIView.animate(withDuration: expandDuration, delay: moveDuration, options: .curveEaseIn, animations: { [weak self] in
                 self?.expand(using: context)
             }) { _ in
                 completion?()
@@ -108,23 +111,21 @@ extension DetailsTransition {
             }
             
             // move members
-            if sender != nil {
-                var finalFrame = context.finalFrame(for: toVC)
-                var safeInset: UIEdgeInsets! = nil
-                if #available(iOS 11.0, *) {
-                    safeInset = fromView.safeAreaInsets
-                } else {
-                    safeInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.maxY, left: 0, bottom: 0, right: 0)
-                }
-                finalFrame = UIEdgeInsetsInsetRect(finalFrame, safeInset)
-                
-                let k = finalFrame.width / toView.frame.width
-                let y = finalFrame.minY + round((k - 1) * 0.5 * toView.frame.height)
-                toView.frame.origin.y = y
-                videoView?.frame.origin.y = y
-                toView.center.x = finalFrame.midX
-                videoView?.center.x = finalFrame.midX
+            var finalFrame = context.finalFrame(for: toVC)
+            var safeInset: UIEdgeInsets! = nil
+            if #available(iOS 11.0, *) {
+                safeInset = fromView.safeAreaInsets
+            } else {
+                safeInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.maxY, left: 0, bottom: 0, right: 0)
             }
+            finalFrame = UIEdgeInsetsInsetRect(finalFrame, safeInset)
+            
+            let k = finalFrame.width / toView.frame.width
+            let y = finalFrame.minY + round((k - 1) * 0.5 * toView.frame.height)
+            toView.frame.origin.y = y
+            videoView?.frame.origin.y = y
+            toView.center.x = finalFrame.midX
+            videoView?.center.x = finalFrame.midX
             
             // enbale blur
             fromView.enableBlur()
@@ -148,6 +149,9 @@ extension DetailsTransition {
             toView.applyProperties(from: container)
             videoView?.applyProperties(from: container)
             
+            if videoView == nil {
+                toView.transform = .identity
+            }
             toView.frame = context.finalFrame(for: toVC)
         }
         
