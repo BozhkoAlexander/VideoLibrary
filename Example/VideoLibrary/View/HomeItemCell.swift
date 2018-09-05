@@ -71,7 +71,7 @@ class HomeItemCell: UICollectionViewCell, HomeItemElement, VideoElement {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = .black
+        backgroundColor = .green
         layer.cornerRadius = 10
         clipsToBounds = true
         

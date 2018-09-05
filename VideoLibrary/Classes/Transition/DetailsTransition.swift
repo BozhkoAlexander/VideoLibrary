@@ -10,14 +10,11 @@ import UIKit
 
 public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate {
     
-    /** superview of sender view */
-    private weak var startSuperview: UIView? = nil
+    /** superview of video view */
+    private weak var initialSuperview: UIView? = nil
     
-    /** Start frame of sender view realted to window */
-    var fromFrame: CGRect? = nil
-    
-    /** Start corenter radius of sender view */
-    private var fromRadius: CGFloat = 0
+    /** Start frame of video view realted to window */
+    private var initialFrame: CGRect? = nil
     
     /** Sender view is used to set animated properties to transition proccess */
     public var sender: UIView? = nil
@@ -28,17 +25,11 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
     /** Controller for interactive dismissal */
     var interactionController: DetailsInteractionController? = nil
     
-    public init(_ senderView: UIView?) {
-        videoView = senderView as? VideoView
-        startSuperview = senderView?.superview
-        fromFrame = senderView?.superview?.convert(senderView!.frame, to: nil)
-        fromRadius = senderView?.layer.cornerRadius ?? 0
-
-        super.init()
-    }
-    
     public init(sender: UIView?, videoView: VideoView? = nil) {
         super.init()
+        
+        self.initialSuperview = videoView?.superview
+        self.initialFrame = initialSuperview?.convert(videoView!.frame, to: nil)
         
         self.sender = sender
         self.videoView = videoView
@@ -55,7 +46,7 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let animator = DetailsAnimator(videoView, isPresent: false, superview: startSuperview, fromFrame: fromFrame, fromRadius: fromRadius)
+        let animator = DismissAnimator(videoView: videoView, sender: sender, finalFrame: initialFrame, finalSuperview: initialSuperview)
         if let delegate = dismissed as? DetailsAnimatorDelegate {
             animator.delegate = delegate
         } else if let nc = (dismissed as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
@@ -100,7 +91,7 @@ extension UIViewController {
             transition.interactionController = nil
             return
         }
-        let height = transition.fromFrame?.midY ?? UIScreen.main.bounds.height
+        let height = UIScreen.main.bounds.height
         let point = pan.translation(in: nil)
         let velocity = pan.velocity(in: nil).y
         let progress = min(1, max(0, point.y / height))
