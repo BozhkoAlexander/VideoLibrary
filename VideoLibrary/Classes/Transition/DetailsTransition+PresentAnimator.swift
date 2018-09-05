@@ -41,8 +41,8 @@ extension DetailsTransition {
             
             prepare(using: transitionContext)
             animate(using: transitionContext) {
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
                 PresentAnimator.complete(using: transitionContext, videoView: videoView, delegate: delegate)
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             }
         }
         
