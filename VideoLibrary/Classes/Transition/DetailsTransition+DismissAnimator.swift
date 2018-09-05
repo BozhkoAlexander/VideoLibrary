@@ -26,15 +26,18 @@ extension DetailsTransition {
         /** Delegate for additional animations during the transition */
         public var delegate: DetailsAnimatorDelegate? = nil
         
-        private let moveDuration: TimeInterval = 0.35
-        private let collapseDuration: TimeInterval = 0.35
+        private var isInteractive: Bool = false
         
-        init(videoView: VideoView?, sender: UIView?, finalFrame: CGRect?, finalSuperview: UIView?) {
+        var moveDuration: TimeInterval { return isInteractive ? 0.75 : 0.35 }
+        var collapseDuration: TimeInterval { return isInteractive ? 0.25 : 0.35 }
+        
+        init(videoView: VideoView?, sender: UIView?, finalFrame: CGRect?, finalSuperview: UIView?, isInteractive: Bool) {
             super.init()
             self.videoView = videoView
             self.sender = sender
             self.finalFrame = finalFrame
             self.finalSuperview = finalSuperview
+            self.isInteractive = isInteractive
         }
         
         // MARK: - Transitioning context
@@ -57,7 +60,7 @@ extension DetailsTransition {
         
         // MARK: - Helpers
         
-        private func prepare(using context: UIViewControllerContextTransitioning) {
+        func prepare(using context: UIViewControllerContextTransitioning) {
             guard
                 let fromVC = context.viewController(forKey: .from),
                 let fromView = fromVC.view
@@ -77,7 +80,7 @@ extension DetailsTransition {
             if let videoView = videoView { container.addSubview(videoView) }
         }
         
-        private func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
+        func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
             delegate?.animate(using: context, isPresentation: false)
             UIView.animate(withDuration: collapseDuration, delay: 0, options: .curveEaseOut, animations: { [weak self] in
                 self?.collapse(using: context)
@@ -89,7 +92,7 @@ extension DetailsTransition {
             }
         }
         
-        private func collapse(using context: UIViewControllerContextTransitioning) {
+        func collapse(using context: UIViewControllerContextTransitioning) {
             guard
                 let fromVC = context.viewController(forKey: .from),
                 let fromView = fromVC.view
@@ -118,7 +121,7 @@ extension DetailsTransition {
             videoView?.applyProperties(from: sender)
         }
         
-        private func move(using context: UIViewControllerContextTransitioning) {
+        func move(using context: UIViewControllerContextTransitioning) {
             guard
                 let fromVC = context.viewController(forKey: .from),
                 let toVC = context.viewController(forKey: .to),
@@ -137,19 +140,31 @@ extension DetailsTransition {
             toView.disableBlur()
         }
         
-        private class func complete(using context: UIViewControllerContextTransitioning, videoView: VideoView?, finalSuperview: UIView?, delegate: DetailsAnimatorDelegate?) {
+        class func complete(using context: UIViewControllerContextTransitioning, videoView: VideoView?, finalSuperview: UIView?, delegate: DetailsAnimatorDelegate?) {
             guard
                 let fromVC = context.viewController(forKey: .from),
                 let toVC = context.viewController(forKey: .to),
                 let fromView = fromVC.view,
                 let toView = toVC.view else { return }
             
-            toView.removeBlurView()
-            fromView.removeFromSuperview()
-            if let videoView = videoView, let superview = finalSuperview {
-                videoView.frame = superview.convert(videoView.frame, from: nil)
-                finalSuperview?.addSubview(videoView)
+            if context.transitionWasCancelled {
+                toView.enableBlur()
+                fromView.transform = .identity
+                fromView.frame = context.initialFrame(for: fromVC)
+                if let videoView = videoView {
+                    let frame = videoView.frame
+                    videoView.transform = .identity
+                    videoView.frame = frame
+                }
+            } else {
+                toView.removeBlurView()
+                fromView.removeFromSuperview()
+                if let videoView = videoView, let superview = finalSuperview {
+                    videoView.frame = superview.convert(videoView.frame, from: nil)
+                    finalSuperview?.addSubview(videoView)
+                }
             }
+            
             delegate?.finish(using: context, isPresentation: false)
         }
         

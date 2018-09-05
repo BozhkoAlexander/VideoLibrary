@@ -46,7 +46,8 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let animator = DismissAnimator(videoView: videoView, sender: sender, finalFrame: initialFrame, finalSuperview: initialSuperview)
+        let isInteractive = interactionController != nil
+        let animator = DismissAnimator(videoView: videoView, sender: sender, finalFrame: initialFrame, finalSuperview: initialSuperview, isInteractive: isInteractive)
         if let delegate = dismissed as? DetailsAnimatorDelegate {
             animator.delegate = delegate
         } else if let nc = (dismissed as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
@@ -73,51 +74,6 @@ public extension VideoViewController where Self: UIViewController {
             scrollView.addGestureRecognizer(pan)
         } else {
             view.addGestureRecognizer(pan)
-        }
-    }
-    
-}
-
-extension UIViewController {
-    
-    @objc func handleInteractiveDismissal(_ pan: UIPanGestureRecognizer) {
-        var transition: DetailsTransition! = transitioningDelegate as? DetailsTransition
-        if transition == nil {
-            transition = navigationController?.transitioningDelegate as? DetailsTransition
-        }
-        guard transition != nil else { return }
-        if let scrollView = pan.view as? UIScrollView, scrollView.contentOffset.y > 0 {
-            transition.interactionController?.cancel()
-            transition.interactionController = nil
-            return
-        }
-        let height = UIScreen.main.bounds.height
-        let point = pan.translation(in: nil)
-        let velocity = pan.velocity(in: nil).y
-        let progress = min(1, max(0, point.y / height))
-        switch pan.state {
-        case .changed where transition.interactionController == nil && point.y > 0:
-            transition.interactionController = DetailsInteractionController()
-            var vc = presentingViewController
-            if let nc = vc as? UINavigationController {
-                vc = nc.viewControllers.last
-            }
-            dismiss(animated: true) {
-                Video.shared.sync(for: vc)
-            }
-        case .changed:
-            transition.interactionController?.update(progress)
-        case .ended:
-            if velocity > 0 || (velocity == 0 && progress > 0.5) {
-                transition.interactionController?.finish()
-            } else {
-                transition.interactionController?.cancel()
-            }
-            transition.interactionController = nil
-        case .cancelled:
-            transition.interactionController?.cancel()
-            transition.interactionController = nil
-        default: break
         }
     }
     
