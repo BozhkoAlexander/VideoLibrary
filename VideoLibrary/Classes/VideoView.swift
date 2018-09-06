@@ -131,7 +131,6 @@ public class VideoView: UIImageView {
     
     private func setup() {
         isUserInteractionEnabled = true
-        layer.cornerRadius = 10
         clipsToBounds = true
         
         setupVideoLayer()

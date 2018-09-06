@@ -138,6 +138,7 @@ extension DetailsTransition {
                 let fromView = fromVC.view,
                 let toView = toVC.view else { return }
             
+            videoView?.removeProperties()
             snapshot?.removeFromSuperview()
             if context.transitionWasCancelled {
                 toView.enableBlur()
