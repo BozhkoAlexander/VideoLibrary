@@ -148,8 +148,6 @@ public class Video: NSObject {
         if let link = forceVideo, !link.isEmpty {
             if let cell = visibleVideos.filter({ $0.videoView?.videoLink == link }).first {
                 result = (delta: 0, cell: cell)
-            } else {
-                forceVideo = nil
             }
         }
         // if there is no force link (usual way)
