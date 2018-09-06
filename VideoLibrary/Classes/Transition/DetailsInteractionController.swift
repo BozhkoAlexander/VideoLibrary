@@ -49,12 +49,9 @@ extension UIViewController {
     
     private func startDismissal(_ pan: UIPanGestureRecognizer) {
         transition?.interactionController = DetailsInteractionController()
-        var vc = presentingViewController
-        if let nc = vc as? UINavigationController {
-            vc = nc.viewControllers.last
-        }
         (pan.view as? UIScrollView)?.isScrollEnabled = false
         dismiss(animated: true) {
+            let vc = UIViewController.presented()
             Video.shared.sync(for: vc)
         }
     }
