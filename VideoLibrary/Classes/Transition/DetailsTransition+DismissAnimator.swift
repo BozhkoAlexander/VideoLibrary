@@ -151,6 +151,7 @@ extension DetailsTransition {
                 toView.enableBlur()
                 fromView.transform = .identity
                 fromView.frame = context.initialFrame(for: fromVC)
+                fromView.mask?.frame = fromView.bounds
                 if let videoView = videoView {
                     let frame = videoView.frame
                     videoView.transform = .identity
