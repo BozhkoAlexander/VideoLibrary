@@ -129,7 +129,13 @@ public class Video: NSObject {
     
     /** Calculate current video in the collection view */
     public func sync(for scrollView: UIScrollView?) {
-        guard let scrollView = scrollView else { return }
+        guard let scrollView = scrollView else {
+            loadedKeys.forEach { (link) in
+                guard let container = Cache.videos.object(forKey: link as NSString) else { return }
+                container.stop()
+            }
+            return
+        }
         let visibleVideos = self.visibleCells(for: scrollView).filter({ $0.videoView != nil })
         var visibleFrame = scrollView.bounds
         if #available(iOS 11.0, *) {
