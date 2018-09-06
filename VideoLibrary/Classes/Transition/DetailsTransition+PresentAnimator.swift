@@ -11,9 +11,6 @@ extension DetailsTransition {
     
     class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
-        /** This view is used to set animated properties to transition proccess */
-        private var sender: UIView? = nil
-        
         /** This view is used for animated video view transfer */
         private var videoView: VideoView? = nil
         
@@ -26,7 +23,6 @@ extension DetailsTransition {
         init(videoView: VideoView?, sender: UIView?) {
             super.init()
             self.videoView = videoView
-            self.sender = sender
         }
         
         // MARK: - Transitioning context
@@ -59,16 +55,16 @@ extension DetailsTransition {
             }
             delegate?.prepare(using: context, isPresentation: true)
             let container = context.containerView
-            container.clipsToBounds = true
             
             // calculate initial frame
             var initialFrame: CGRect! = videoView?.superview?.convert(videoView!.frame, to: container)
+            var toViewInitialFrame = context.finalFrame(for: toVC)
+            toViewInitialFrame.origin.y = toViewInitialFrame.maxY
             if initialFrame == nil {
-                initialFrame = context.finalFrame(for: toVC)
-                initialFrame.origin.y = initialFrame.maxY
+                initialFrame = toViewInitialFrame
             }
-            toView.frame = initialFrame
             videoView?.frame = initialFrame
+            toView.frame = toViewInitialFrame
             
             // apply initial properties
             toView.applyProperties()
@@ -78,6 +74,10 @@ extension DetailsTransition {
             container.addSubview(toView)
             if let videoView = videoView {
                 container.addSubview(videoView)
+                
+                let k = videoView.frame.width / toView.frame.width
+                toView.transform = toView.transform.scaledBy(x: k, y: k)
+                toView.frame = videoView.frame
             } else {
                 let center = toView.center
                 toView.transform = toView.transform.scaledBy(x: 0.9, y: 0.9)
@@ -126,6 +126,7 @@ extension DetailsTransition {
             videoView?.frame.origin.y = y
             toView.center.x = finalFrame.midX
             videoView?.center.x = finalFrame.midX
+            toView.frame.size.height = round(k * finalFrame.height)
             
             // enbale blur
             fromView.enableBlur()
@@ -141,16 +142,13 @@ extension DetailsTransition {
             let finalFrame = context.finalFrame(for: toVC)
             
             let k = finalFrame.width / toView.frame.width
-            let transform = toView.transform.scaledBy(x: k, y: k)
-            videoView?.transform = transform
+            videoView?.transform = videoView!.transform.scaledBy(x: k, y: k)
             
             // apply properties to members
             toView.removeProperties()
             videoView?.removeProperties()
             
-            if videoView == nil {
-                toView.transform = .identity
-            }
+            toView.transform = .identity
             toView.frame = context.finalFrame(for: toVC)
         }
         
