@@ -72,7 +72,7 @@ extension DetailsTransition {
             }
             
             let snapshot = fromView.snapshotView(afterScreenUpdates: false)
-            snapshot?.contentMode = .scaleAspectFill
+            snapshot?.contentMode = .top
             if snapshot != nil { container.addSubview(snapshot!) }
             if let videoView = videoView { container.addSubview(videoView) }
             
