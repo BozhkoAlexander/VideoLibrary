@@ -11,9 +11,6 @@ extension DetailsTransition {
     
     class DismissAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
-        /** This view is used to set animated properties to transition proccess */
-        private var sender: UIView? = nil
-        
         /** This view is used for animated video view transfer */
         private var videoView: VideoView? = nil
         
@@ -31,10 +28,9 @@ extension DetailsTransition {
         var moveDuration: TimeInterval { return isInteractive ? 0.75 : 0.35 }
         var collapseDuration: TimeInterval { return isInteractive ? 0.25 : 0.35 }
         
-        init(videoView: VideoView?, sender: UIView?, finalFrame: CGRect?, finalSuperview: UIView?, isInteractive: Bool) {
+        init(videoView: VideoView?, finalFrame: CGRect?, finalSuperview: UIView?, isInteractive: Bool) {
             super.init()
             self.videoView = videoView
-            self.sender = sender
             self.finalFrame = finalFrame
             self.finalSuperview = finalSuperview
             self.isInteractive = isInteractive
@@ -51,112 +47,100 @@ extension DetailsTransition {
             let finalSuperview = self.finalSuperview
             let delegate = self.delegate
             
-            prepare(using: transitionContext)
-            animate(using: transitionContext) {
-                DismissAnimator.complete(using: transitionContext, videoView: videoView, finalSuperview: finalSuperview, delegate: delegate)
+            let snapshot = prepare(using: transitionContext)
+            animate(using: transitionContext, snapshot: snapshot) {
+                DismissAnimator.complete(using: transitionContext, snapshot: snapshot, videoView: videoView, finalSuperview: finalSuperview, delegate: delegate)
                 transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             }
         }
         
         // MARK: - Helpers
         
-        func prepare(using context: UIViewControllerContextTransitioning) {
+        func prepare(using context: UIViewControllerContextTransitioning) -> UIView? {
             guard
                 let fromVC = context.viewController(forKey: .from),
                 let fromView = fromVC.view
                 else {
                     context.completeTransition(false)
-                    return
+                    return nil
             }
             delegate?.prepare(using: context, isPresentation: false)
             let container = context.containerView
             
-            // calculate initial frame
-            fromView.mask = UIView(frame: fromView.bounds)
-            fromView.mask?.backgroundColor = .white
             if let frame = videoView?.superview?.convert(videoView!.frame, to: container) {
                 videoView?.frame = frame
             }
+            
+            let snapshot = fromView.snapshotView(afterScreenUpdates: false)
+            if snapshot != nil { container.addSubview(snapshot!) }
             if let videoView = videoView { container.addSubview(videoView) }
+            
+            fromView.isHidden = true
+            
+            return snapshot
         }
         
-        func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
+        func animate(using context: UIViewControllerContextTransitioning, snapshot: UIView?, with completion: (() -> Void)?) {
             delegate?.animate(using: context, isPresentation: false)
             UIView.animate(withDuration: collapseDuration, delay: 0, options: .curveEaseOut, animations: { [weak self] in
-                self?.collapse(using: context)
+                self?.collapse(using: context, snapshot: snapshot)
                 }, completion: nil)
             UIView.animate(withDuration: moveDuration, delay: collapseDuration, options: .curveEaseIn, animations: { [weak self] in
-                self?.move(using: context)
+                self?.move(using: context, snapshot: snapshot)
             }) { _ in
                 completion?()
             }
         }
         
-        func collapse(using context: UIViewControllerContextTransitioning) {
-            guard
-                let fromVC = context.viewController(forKey: .from),
-                let fromView = fromVC.view
-                else {
-                    context.completeTransition(false)
-                    return
-            }
-            
+        func collapse(using context: UIViewControllerContextTransitioning, snapshot: UIView?) {
+            let container = context.containerView
             // transform members
             if let videoView = videoView, let finalFrame = finalFrame {
                 let k = finalFrame.width / videoView.frame.width
                 let transform = videoView.transform.scaledBy(x: k, y: k)
                 videoView.transform = transform
-                videoView.center.x = fromView.frame.midX
+                videoView.center.x = container.bounds.midX
                 videoView.frame.origin.y += round((1 - k) * 0.5 * videoView.bounds.height)
-                
-                fromView.mask?.frame = videoView.frame
-            } else {
-                let center = fromView.center
-                fromView.transform = fromView.transform.scaledBy(x: 0.9, y: 0.9)
-                fromView.center = center
+            }
+            if let snapshot = snapshot {
+                let center = snapshot.center
+                snapshot.transform = snapshot.transform.scaledBy(x: 0.9, y: 0.9)
+                snapshot.center = center
             }
             
             //apply properties to members
-            fromView.mask?.applyProperties(from: sender)
-            videoView?.applyProperties(from: sender)
+            snapshot?.applyProperties()
+            videoView?.applyProperties()
         }
         
-        func move(using context: UIViewControllerContextTransitioning) {
+        func move(using context: UIViewControllerContextTransitioning, snapshot: UIView?) {
             guard
-                let fromVC = context.viewController(forKey: .from),
                 let toVC = context.viewController(forKey: .to),
-                let fromView = fromVC.view,
                 let toView = toVC.view else {
                     context.completeTransition(false)
                     return
             }
             if let finalFrame = finalFrame {
                 videoView?.frame = finalFrame
-                fromView.mask?.frame = finalFrame
+                snapshot?.frame = finalFrame
             } else {
-                fromView.frame.origin.y = context.containerView.frame.maxY
+                snapshot?.frame.origin.y = context.containerView.frame.maxY
             }
             // disable blur
             toView.disableBlur()
         }
         
-        class func complete(using context: UIViewControllerContextTransitioning, videoView: VideoView?, finalSuperview: UIView?, delegate: DetailsAnimatorDelegate?) {
+        class func complete(using context: UIViewControllerContextTransitioning, snapshot: UIView?, videoView: VideoView?, finalSuperview: UIView?, delegate: DetailsAnimatorDelegate?) {
             guard
                 let fromVC = context.viewController(forKey: .from),
                 let toVC = context.viewController(forKey: .to),
                 let fromView = fromVC.view,
                 let toView = toVC.view else { return }
             
+            snapshot?.removeFromSuperview()
             if context.transitionWasCancelled {
                 toView.enableBlur()
-                fromView.transform = .identity
-                fromView.frame = context.initialFrame(for: fromVC)
-                fromView.mask?.frame = fromView.bounds
-                if let videoView = videoView {
-                    let frame = videoView.frame
-                    videoView.transform = .identity
-                    videoView.frame = frame
-                }
+                fromView.isHidden = false
             } else {
                 toView.removeBlurView()
                 fromView.removeFromSuperview()

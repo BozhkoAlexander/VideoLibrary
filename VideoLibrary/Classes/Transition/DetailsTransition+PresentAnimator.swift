@@ -71,8 +71,8 @@ extension DetailsTransition {
             videoView?.frame = initialFrame
             
             // apply initial properties
-            toView.applyProperties(from: sender)
-            videoView?.applyProperties(from: sender)
+            toView.applyProperties()
+            videoView?.applyProperties()
             
             // add members to transition container
             container.addSubview(toView)
@@ -138,7 +138,6 @@ extension DetailsTransition {
                     context.completeTransition(false)
                     return
             }
-            let container = context.containerView
             let finalFrame = context.finalFrame(for: toVC)
             
             let k = finalFrame.width / toView.frame.width
@@ -146,8 +145,8 @@ extension DetailsTransition {
             videoView?.transform = transform
             
             // apply properties to members
-            toView.applyProperties(from: container)
-            videoView?.applyProperties(from: container)
+            toView.removeProperties()
+            videoView?.removeProperties()
             
             if videoView == nil {
                 toView.transform = .identity

@@ -47,7 +47,7 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let isInteractive = interactionController != nil
-        let animator = DismissAnimator(videoView: videoView, sender: sender, finalFrame: initialFrame, finalSuperview: initialSuperview, isInteractive: isInteractive)
+        let animator = DismissAnimator(videoView: videoView, finalFrame: initialFrame, finalSuperview: initialSuperview, isInteractive: isInteractive)
         if let delegate = dismissed as? DetailsAnimatorDelegate {
             animator.delegate = delegate
         } else if let nc = (dismissed as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
