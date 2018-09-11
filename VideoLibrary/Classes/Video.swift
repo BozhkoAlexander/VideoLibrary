@@ -153,7 +153,7 @@ public class Video: NSObject {
         // if there is no force link (usual way)
         if result == nil {
             let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoCell)? in
-                guard let videoFrame = cell.videoView?.frame, cell.videoView?.videoLink != nil else { return nil }
+                guard let videoFrame = cell.videoView?.frame, cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
                 let midY = cell.convert(videoFrame, to: scrollView).midY
                 var delta = abs(center - midY)
                 if cell.frame.minY < cell.bounds.midY || // for the first element
