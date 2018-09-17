@@ -29,6 +29,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemBuffering(_:)), name: .VideoBuffered, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemPlayPressed(_:)), name: .VideoPlayPressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemPausePressed(_:)), name: .VideoPausePressed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.itemStop(_:)), name: .VideoStop, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.syncVideo), name: .VideoResync, object: nil)
     }
     
@@ -42,6 +43,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         NotificationCenter.default.removeObserver(self, name: .VideoBuffered, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoPlayPressed, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoPausePressed, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .VideoStop, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoResync, object: nil)
     }
     
@@ -75,6 +77,17 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     @objc func itemPausePressed(_ notification: Notification) {
         guard let link = notification.object as? String else { return }
         Video.shared.pause(link, for: scrollView)
+    }
+    
+    @objc func itemStop(_ notification: Notification) {
+        guard let link = notification.object as? String else { return }
+        var cell: VideoCell? = nil
+        if let tableView = scrollView as? UITableView {
+            cell = tableView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLink == link }).first
+        } else if let collectionView = scrollView as? UICollectionView {
+            cell = collectionView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLink == link }).first
+        }
+        Video.shared.pause(link, cell: cell, for: scrollView)
     }
     
     @objc func syncVideo() {

@@ -294,7 +294,7 @@ public class Video: NSObject {
         let playing = loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) }).filter({ $0.player.rate > 0 })
         playing.forEach({
             guard let link = ($0.item.asset as? AVURLAsset)?.url.absoluteString else { return }
-            NotificationCenter.default.post(name: .VideoStop, object: link)
+            NotificationCenter.default.post(name: .VideoPausePressed, object: link)
         })
     }
     
