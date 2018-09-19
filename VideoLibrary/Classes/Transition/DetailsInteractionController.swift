@@ -30,7 +30,7 @@ extension UIViewController {
             startDismissal(pan)
         case .changed:
             transition.interactionController?.update(progress)
-        case .ended where (velocity > 0 && progress > 0.2) || (velocity == 0 && progress > 0.5):
+        case .ended where (velocity > 0) || (velocity == 0 && progress > 0.4):
             finishDismissal(pan)
         case .ended,
              .cancelled: cancelDismissal(pan)

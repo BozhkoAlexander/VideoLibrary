@@ -83,10 +83,10 @@ extension DetailsTransition {
         
         func animate(using context: UIViewControllerContextTransitioning, snapshot: UIView?, with completion: (() -> Void)?) {
             delegate?.animate(using: context, isPresentation: false)
-            UIView.animate(withDuration: collapseDuration, delay: 0, options: .curveEaseOut, animations: { [weak self] in
+            UIView.animate(withDuration: collapseDuration, delay: 0, options: .curveEaseIn, animations: { [weak self] in
                 self?.collapse(using: context, snapshot: snapshot)
                 }, completion: nil)
-            UIView.animate(withDuration: moveDuration, delay: collapseDuration, options: .curveEaseIn, animations: { [weak self] in
+            UIView.animate(withDuration: moveDuration, delay: collapseDuration, options: .curveEaseOut, animations: { [weak self] in
                 self?.move(using: context, snapshot: snapshot)
             }) { _ in
                 completion?()

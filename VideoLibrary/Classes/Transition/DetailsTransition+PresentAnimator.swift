@@ -90,10 +90,10 @@ extension DetailsTransition {
         
         private func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
             delegate?.animate(using: context, isPresentation: true)
-            UIView.animate(withDuration: moveDuration, delay: 0, options: .curveEaseOut, animations: { [weak self] in
+            UIView.animate(withDuration: moveDuration, delay: 0, options: .curveEaseIn, animations: { [weak self] in
                 self?.move(using: context)
                 }, completion: nil)
-            UIView.animate(withDuration: expandDuration, delay: moveDuration, options: .curveEaseIn, animations: { [weak self] in
+            UIView.animate(withDuration: expandDuration, delay: moveDuration, options: .curveEaseOut, animations: { [weak self] in
                 self?.expand(using: context)
             }) { _ in
                 completion?()
