@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'VideoLibrary'
-  s.version          = '0.1.33'
+  s.version          = '0.1.34'
   s.summary          = 'The library for iOS apps which helps to implement video lists.'
 
 # This description is used to generate tags and improve search results.
@@ -38,6 +38,6 @@ The point in this implementation is videos can be auto playable and non-auto pla
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
 
-  s.swift_version = '4.0'
+  s.swift_version = '4.2'
 
 end

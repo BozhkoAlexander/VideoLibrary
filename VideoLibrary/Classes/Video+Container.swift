@@ -81,9 +81,9 @@ public extension Video {
                 item.addObserver(self, forKeyPath: $0, options: .new, context: nil)
             })
             
-            timer = player.addPeriodicTimeObserver(forInterval: CMTimeMake(1, 1), queue: .main) { [weak self] (time) in
+            timer = player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: .main) { [weak self] (time) in
                 guard let this = self else { return }
-                guard time != kCMTimeZero else { return }
+                guard time != CMTime.zero else { return }
                 let remain = this.item.duration.seconds - time.seconds
                 guard !remain.isNaN && !remain.isZero else { return }
                 let minutes = Int(remain) / 60
@@ -109,7 +109,7 @@ public extension Video {
         }
         
         public func stop() {
-            self.player.seek(to: kCMTimeZero)
+            self.player.seek(to: CMTime.zero)
             self.player.pause()
         }
         

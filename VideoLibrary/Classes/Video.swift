@@ -20,10 +20,12 @@ public class Video: NSObject {
     override internal init() {
         super.init()
         startObservers()
-        do {
-            try audio.setCategory(AVAudioSessionCategoryPlayback)
+        if #available(iOS 10.0, *) {
+            do {
+                try audio.setCategory(.playback, mode: .default)
+            }
+            catch {}
         }
-        catch {}
     }
     
     deinit {
@@ -139,7 +141,7 @@ public class Video: NSObject {
         let visibleVideos = self.visibleCells(for: scrollView).filter({ $0.videoView != nil })
         var visibleFrame = scrollView.bounds
         if #available(iOS 11.0, *) {
-            visibleFrame = UIEdgeInsetsInsetRect(scrollView.bounds, scrollView.safeAreaInsets)
+            visibleFrame = scrollView.bounds.inset(by: scrollView.safeAreaInsets)
         }
         let center = round(visibleFrame.midY)
         // calculate current video
@@ -160,7 +162,7 @@ public class Video: NSObject {
                     (scrollView.contentSize.height - cell.frame.maxY) < cell.bounds.midY { // for the last element
                     var insetFrame = scrollView.frame
                     if #available(iOS 11.0, *) {
-                        insetFrame = UIEdgeInsetsInsetRect(scrollView.frame, scrollView.safeAreaInsets)
+                        insetFrame = scrollView.frame.inset(by: scrollView.safeAreaInsets)
                     }
                     let visibleHeight = cell.convert(videoFrame, to: nil).intersection(insetFrame).height
                     if visibleHeight >= videoFrame.height {

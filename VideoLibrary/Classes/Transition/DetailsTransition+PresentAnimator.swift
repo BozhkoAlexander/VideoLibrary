@@ -118,7 +118,7 @@ extension DetailsTransition {
             } else {
                 safeInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.maxY, left: 0, bottom: 0, right: 0)
             }
-            finalFrame = UIEdgeInsetsInsetRect(finalFrame, safeInset)
+            finalFrame = finalFrame.inset(by: safeInset)
             
             let k = finalFrame.width / toView.frame.width
             let y = finalFrame.minY + round((k - 1) * 0.5 * toView.frame.height)

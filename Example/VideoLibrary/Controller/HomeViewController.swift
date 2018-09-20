@@ -15,7 +15,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     
     var videoController = VideoController()
     
-    var homeView: HomeView! { return view as! HomeView }
+    var homeView: HomeView! { return view as? HomeView }
     
     var items = Array<HomeItem>()
     

@@ -25,7 +25,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         super.init()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemDidPlayToEndTime(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.playerRouteChanged(_:)), name: .AVAudioSessionRouteChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.playerRouteChanged(_:)), name: AVAudioSession.routeChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemBuffering(_:)), name: .VideoBuffered, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemPlayPressed(_:)), name: .VideoPlayPressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemPausePressed(_:)), name: .VideoPausePressed, object: nil)
@@ -39,7 +39,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .AVAudioSessionRouteChange, object: nil)
+        NotificationCenter.default.removeObserver(self, name: AVAudioSession.routeChangeNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoBuffered, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoPlayPressed, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoPausePressed, object: nil)
@@ -56,10 +56,10 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     @objc func playerRouteChanged(_ notification: Notification) {
         guard let reason = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
-            reason == AVAudioSessionRouteChangeReason.oldDeviceUnavailable.rawValue else { return }
+            reason == AVAudioSession.RouteChangeReason.oldDeviceUnavailable.rawValue else { return }
         guard let previousRoute = notification.userInfo?[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription else { return }
         let port = previousRoute.outputs.first?.portType
-        guard port == AVAudioSessionPortHeadphones else { return }
+        guard port == AVAudioSession.Port.headphones else { return }
         DispatchQueue.main.async {
             Video.shared.pause()
         }

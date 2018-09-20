@@ -30,8 +30,8 @@ extension UIImageView {
             if !cached {
                 let anim = CATransition()
                 anim.duration = 0.2
-                anim.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-                anim.type = kCATransitionFade
+                anim.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                anim.type = CATransitionType.fade
                 self?.layer.add(anim, forKey: nil)
             }
         }

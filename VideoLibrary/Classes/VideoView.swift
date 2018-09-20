@@ -78,7 +78,7 @@ public class VideoView: UIImageView {
     }
     
     private func setupLoader() {
-        let loader = UIActivityIndicatorView(activityIndicatorStyle: .white)
+        let loader = UIActivityIndicatorView(style: .white)
         loader.hidesWhenStopped = true
         self.addSubview(loader)
         self.loader = loader
