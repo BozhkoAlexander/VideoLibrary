@@ -225,7 +225,8 @@ public class VideoView: UIImageView {
         
         videoLayer.opacity = 0
         playButton.isSelected = false
-        playButton.layer.opacity = link != nil ? 1 : 0
+        let hasVideo = link != nil && URL(string: link!) != nil
+        playButton.layer.opacity = hasVideo ? 1 : 0
     }
     
     /** Link video container with view */
@@ -269,7 +270,8 @@ public class VideoView: UIImageView {
             loader.stopAnimating()
             volumeButton.layer.opacity = 0
             timeLabel.layer.opacity = 0
-            playButton.layer.opacity = videoLink != nil ? 1 : 0
+            let hasVideo = videoLink != nil && URL(string: videoLink!) != nil
+            playButton.layer.opacity = hasVideo ? 1 : 0
             playButton.isSelected = false
         case .paused:
             setVideoOpacity(1)
