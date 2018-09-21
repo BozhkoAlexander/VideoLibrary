@@ -133,7 +133,7 @@ public class Video: NSObject {
     public func sync(for scrollView: UIScrollView?) {
         guard let scrollView = scrollView else {
             loadedKeys.forEach { (link) in
-                guard let container = Cache.videos.object(forKey: link as NSString) else { return }
+                guard link != forceVideo, let container = Cache.videos.object(forKey: link as NSString) else { return }
                 container.stop()
             }
             return
@@ -186,7 +186,7 @@ public class Video: NSObject {
             cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
         })
         loadedKeys.forEach { (link) in
-            guard let container = Cache.videos.object(forKey: link as NSString), container != current else { return }
+            guard link != forceVideo, let container = Cache.videos.object(forKey: link as NSString), container != current else { return }
             container.stop()
         }
         // play or load
