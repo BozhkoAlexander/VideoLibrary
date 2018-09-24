@@ -120,7 +120,11 @@ public extension Video {
         public func bufferingStatus() -> Status? {
             guard item.status != .failed else { return .empty }
             if item.isPlaybackBufferEmpty {
-                return .loading
+                if #available(iOS 10.0, *) {
+                    return .loading
+                } else {
+                    return nil
+                }
             } else if item.isPlaybackLikelyToKeepUp || item.isPlaybackBufferFull {
                 if player.rate > 0 {
                     return .playing
