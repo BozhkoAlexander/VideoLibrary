@@ -12,7 +12,11 @@ class Cache {
     
     internal init() {}
 
-    static let videos = NSCache<NSString, Video.Container>()
+    static let videos: NSCache<NSString, Video.Container> = {
+        let cache = NSCache<NSString, Video.Container>()
+        cache.countLimit = 4
+        return cache
+    }()
     
 }
 

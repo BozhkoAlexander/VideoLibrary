@@ -28,6 +28,7 @@
 		FA61AC4D2136962100DE7312 /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC392136962000DE7312 /* DetailsViewController.swift */; };
 		FA61AC4E2136962100DE7312 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC3A2136962000DE7312 /* NavigationController.swift */; };
 		FA61AC822136A83E00DE7312 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA61AC812136A83E00DE7312 /* AppDelegate.swift */; };
+		FA826985215B564F00AEDE4E /* SharedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA826984215B564F00AEDE4E /* SharedView.swift */; };
 		FB44FA6369470D584076E785 /* Pods_VideoLibrary_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38C074058ECE9698F6BA761 /* Pods_VideoLibrary_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -75,6 +76,7 @@
 		FA61AC3A2136962000DE7312 /* NavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		FA61AC52213696AA00DE7312 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA61AC812136A83E00DE7312 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FA826984215B564F00AEDE4E /* SharedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +220,7 @@
 		FA61AC2F2136962000DE7312 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				FA826984215B564F00AEDE4E /* SharedView.swift */,
 				FA61AC302136962000DE7312 /* HomeItemCell.swift */,
 				FA56ED33213E539C00506955 /* HomeShortCell.swift */,
 				FA61AC312136962000DE7312 /* DetailsView.swift */,
@@ -408,6 +411,7 @@
 				FA61AC422136962100DE7312 /* String.swift in Sources */,
 				FA61AC482136962100DE7312 /* DetailsItemCell.swift in Sources */,
 				FA61AC462136962100DE7312 /* DetailsView.swift in Sources */,
+				FA826985215B564F00AEDE4E /* SharedView.swift in Sources */,
 				FA61AC4B2136962100DE7312 /* ViewController.swift in Sources */,
 				FA61AC4E2136962100DE7312 /* NavigationController.swift in Sources */,
 				FA61AC4C2136962100DE7312 /* HomeViewController.swift in Sources */,

@@ -9,6 +9,12 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    // MARK: - Life cycle
+    
+    override func loadView() {
+        view = SharedView(for: self)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +26,11 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    // MARK: - UI actions
+    
+    @objc func buttonPressed(_ sneder: UIButton) {
+        self.dismiss(animated: true, completion: nil)
+    }
 
 }
 

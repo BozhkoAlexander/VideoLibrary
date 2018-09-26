@@ -79,8 +79,10 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     }
     
     @objc func randomPage() {
-        guard let item = items.shuffled().first else { return }
-        let vc = DetailsViewController(item, sender: nil)
+//        guard let item = items.shuffled().first else { return }
+//        let vc = DetailsViewController(item, sender: nil)
+//        self.present(vc, animated: true)
+        let vc = ViewController()
         self.present(vc, animated: true)
     }
     

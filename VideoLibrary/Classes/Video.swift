@@ -117,8 +117,12 @@ public class Video: NSObject {
                 let item = AVPlayerItem(asset: asset)
                 let container = Container(player: player, item: item)
                 DispatchQueue.main.async {
-                    this.loadedKeys.append(link)
+                    if !this.loadedKeys.contains(link) {
+                        this.loadedKeys.append(link)
+                    }
                     Cache.videos.setObject(container, forKey: link as NSString)
+                    this.loadedKeys = this.loadedKeys.filter({ Cache.videos.object(forKey: $0 as NSString) != nil })
+                    
                     container.player.replaceCurrentItem(with: container.item)
                     callback?(container, false)
                     if let index = this.loadingKeys.index(of: link) {
