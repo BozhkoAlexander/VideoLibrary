@@ -91,19 +91,8 @@ public class Video: NSObject {
                  */
                 var error: NSError? = nil
                 let status = asset.statusOfValue(forKey: "playable", error: &error)
-                switch status {
-                case .loaded: break
-                case .failed, .cancelled:
-                    print("VIDEO: Failed to load asset successfully")
-                    DispatchQueue.main.async {
-                        callback?(nil, false)
-                        if let index = this.loadingKeys.index(of: link) {
-                            this.loadingKeys.remove(at: index)
-                        }
-                    }
-                    return
-                default:
-                    print("VIDEO: Unkown state of asset")
+                guard status == .loaded else {
+                    print("VIDEO: Failed to load asset (\(status.stringValue))")
                     DispatchQueue.main.async {
                         callback?(nil, false)
                         if let index = this.loadingKeys.index(of: link) {
@@ -121,6 +110,9 @@ public class Video: NSObject {
                         this.loadedKeys.append(link)
                     }
                     Cache.videos.setObject(container, forKey: link as NSString)
+                    if Cache.videos.object(forKey: link as NSString) == nil { // fix for bug with full cache
+                        Cache.videos.setObject(container, forKey: link as NSString)
+                    }
                     this.loadedKeys = this.loadedKeys.filter({ Cache.videos.object(forKey: $0 as NSString) != nil })
                     
                     container.player.replaceCurrentItem(with: container.item)
@@ -313,6 +305,20 @@ public class Video: NSObject {
             return tableView.visibleCells.compactMap({ $0 as? VideoCell })
         }
         return []
+    }
+    
+}
+
+private extension AVKeyValueStatus {
+    
+    var stringValue: String {
+        switch self {
+        case .cancelled: return "canceled"
+        case .failed: return "failed"
+        case .loaded: return "loaded"
+        case .loading: return "loading"
+        case .unknown: return "unknown"
+        }
     }
     
 }
