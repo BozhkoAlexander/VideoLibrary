@@ -71,6 +71,8 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     }
     
     @objc func itemPlayPressed(_ notification: Notification) {
+        guard let videoView = notification.object as? VideoView else { return }
+        guard let cells = scrollView?.visibleVideoCells.filter({ $0.videoView == videoView }), !cells.isEmpty else { return }
         Video.shared.sync(for: scrollView)
     }
     
@@ -146,6 +148,19 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let cell = tableView.cellForRow(at: indexPath) as? VideoCell else { return }
         cell.videoView.setupControlsTimer()
+    }
+    
+}
+
+private extension UIScrollView {
+    
+    var visibleVideoCells: Array<VideoCell> {
+        if let tableView = self as? UITableView {
+            return tableView.visibleCells.compactMap({ $0 as? VideoCell })
+        } else if let collectionView = self as? UICollectionView {
+            return collectionView.visibleCells.compactMap({ $0 as? VideoCell })
+        }
+        return []
     }
     
 }

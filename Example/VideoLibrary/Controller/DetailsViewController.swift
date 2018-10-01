@@ -70,6 +70,9 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
         if let nc = vc as? UINavigationController {
             vc = nc.viewControllers.last
         }
+        if transition?.videoView == nil {
+            Video.shared.forceVideo = nil
+        }
         self.dismiss(animated: true) {
             Video.shared.sync(for: vc)
         }

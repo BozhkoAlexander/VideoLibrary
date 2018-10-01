@@ -360,7 +360,7 @@ public class VideoView: UIImageView {
             NotificationCenter.default.post(name: .VideoPausePressed, object: videoLink)
         } else {
             Video.shared.forceVideo = videoLink
-            NotificationCenter.default.post(name: .VideoPlayPressed, object: videoLink)
+            NotificationCenter.default.post(name: .VideoPlayPressed, object: self)
         }
     }
     
