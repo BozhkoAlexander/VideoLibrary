@@ -19,6 +19,8 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     weak var scrollView: UIScrollView? = nil
     
+    weak var viewController: UIViewController? = nil
+    
     // MARK: - Life cycle
     
     public override init() {
@@ -73,7 +75,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     @objc func itemPlayPressed(_ notification: Notification) {
         guard let videoView = notification.object as? VideoView else { return }
         guard let cells = scrollView?.visibleVideoCells.filter({ $0.videoView == videoView }), !cells.isEmpty else { return }
-        Video.shared.sync(for: scrollView)
+        Video.shared.sync(for: viewController)
     }
     
     @objc func itemPausePressed(_ notification: Notification) {
@@ -93,7 +95,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     }
     
     @objc func syncVideo() {
-        Video.shared.sync(for: scrollView)
+        Video.shared.sync(for: viewController)
     }
     
     // MARK: - Gesture reocgnizer delegate
@@ -105,8 +107,9 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     // MARK: - Feature methods (needs to be called in view controller which support video view)
     
     /** Call in viewDidLoad */
-    public func setupScrollView(_ scrollView: UIScrollView?) {
+    public func setup(_ scrollView: UIScrollView?, for viewController: UIViewController?) {
         self.scrollView = scrollView
+        self.viewController = viewController
     }
     
     /** Call in viewDidAppear and any other place where needs to resync video. */

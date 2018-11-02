@@ -125,9 +125,45 @@ public class Video: NSObject {
         }
     }
     
-    /** Calculate current video in the collection view */
-    public func sync(for scrollView: UIScrollView?) {
-        guard let scrollView = scrollView else {
+    /** Pause video by pressing pause button */
+    public func pause(_ link: String, cell: VideoCell? = nil, for scrollView: UIScrollView?) {
+        self.forceVideo = nil
+        if let container = Cache.videos.object(forKey: link as NSString) {
+            container.pause()
+        }
+        if let cell = cell {
+            // video did end displaying
+            cell.videoView.update(status: .stopped, container: nil)
+            cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
+        } else if let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLink == link }).first {
+            // video paused by play button
+            cell.videoView.update(status: .paused, container: nil)
+            cell.video(cell, didChangeStatus: .paused, withContainer: nil)
+        }
+    }
+    
+    /** Stop video after it ends */
+    public func finish(_ link: String, for scrollView: UIScrollView?) {
+        forceVideo = nil
+        if let container = Cache.videos.object(forKey: link as NSString) {
+            container.stop()
+        }
+        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLink == link }).first else { return }
+        cell.videoView.update(status: .ended, container: nil)
+        cell.video(cell, didChangeStatus: .ended, withContainer: nil)
+    }
+    
+    /** Buffering for a video */
+    public func buffering(_ container: Container, for scrollView: UIScrollView?) {
+        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLayer.player == container.player }).first else { return }
+        guard let status = container.bufferingStatus() else { return }
+        cell.videoView.update(status: status, container: container)
+        cell.video(cell, didChangeStatus: status, withContainer: container)
+    }
+    
+    /** Sync view controller */
+    public func sync(for viewController: UIViewController?) {
+        guard let scrollView = (viewController as? VideoViewController)?.videoController.scrollView else {
             loadedKeys.forEach { (link) in
                 guard link != forceVideo, let container = Cache.videos.object(forKey: link as NSString) else { return }
                 container.stop()
@@ -135,6 +171,10 @@ public class Video: NSObject {
             return
         }
         let visibleVideos = self.visibleCells(for: scrollView).filter({ $0.videoView != nil })
+        visibleVideos.forEach({
+            $0.videoView?.setupControlsTimer()
+        })
+
         var visibleFrame = scrollView.bounds
         if #available(iOS 11.0, *) {
             visibleFrame = scrollView.bounds.inset(by: scrollView.safeAreaInsets)
@@ -142,14 +182,15 @@ public class Video: NSObject {
         let center = round(visibleFrame.midY)
         // calculate current video
         var result: (delta: CGFloat, cell: VideoCell)? = nil
+        let isPresented = viewController == UIViewController.presented()
         // if there is force link (play button pressed)
-        if let link = forceVideo, !link.isEmpty {
+        if let link = forceVideo, !link.isEmpty && isPresented {
             if let cell = visibleVideos.filter({ $0.videoView?.videoLink == link }).first {
                 result = (delta: 0, cell: cell)
             }
         }
         // if there is no force link (usual way)
-        if result == nil {
+        if result == nil && isPresented {
             let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoCell)? in
                 guard let videoFrame = cell.videoView?.frame, cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
                 let midY = cell.convert(videoFrame, to: scrollView).midY
@@ -187,10 +228,10 @@ public class Video: NSObject {
         }
         // play or load
         guard let cell = result?.cell, let delta = result?.delta else { return }
-        self.play(cell, delta: delta, for: scrollView, container: current)
+        self.play(cell, delta: delta, for: viewController, container: current)
     }
     
-    public func play(_ cell: VideoCell, delta: CGFloat = 0, for scrollView: UIScrollView? = nil, container: Container? = nil) {
+    public func play(_ cell: VideoCell, delta: CGFloat = 0, for viewController: UIViewController? = nil, container: Container? = nil) {
         if let container = container {
             if cell.videoView.autoplay || cell.videoView.videoLink == forceVideo {
                 container.play()
@@ -212,58 +253,13 @@ public class Video: NSObject {
                     cell.video(cell, didChangeStatus: .empty, withContainer: nil)
                     return
                 }
-                if scrollView != nil {
-                    self?.sync(for: scrollView)
+                if viewController != nil {
+                    self?.sync(for: viewController)
                 } else {
-                    self?.play(cell, delta: delta, for: scrollView, container: container)
+                    self?.play(cell, delta: delta, for: viewController, container: container)
                 }
             }
         }
-    }
-    
-    /** Pause video by pressing pause button */
-    public func pause(_ link: String, cell: VideoCell? = nil, for scrollView: UIScrollView?) {
-        self.forceVideo = nil
-        if let container = Cache.videos.object(forKey: link as NSString) {
-            container.pause()
-        }
-        if let cell = cell {
-            // video did end displaying
-            cell.videoView.update(status: .stopped, container: nil)
-            cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
-        } else if let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLink == link }).first {
-            // video paused by play button
-            cell.videoView.update(status: .paused, container: nil)
-            cell.video(cell, didChangeStatus: .paused, withContainer: nil)
-        }
-    }
-    
-    /** Stop video after it ends */
-    public func finish(_ link: String, for scrollView: UIScrollView?) {
-        forceVideo = nil
-        if let container = Cache.videos.object(forKey: link as NSString) {
-            container.stop()
-        }
-        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLink == link }).first else { return }
-        cell.videoView.update(status: .ended, container: nil)
-        cell.video(cell, didChangeStatus: .ended, withContainer: nil)
-    }
-    
-    /** Buffering for a video */
-    public func buffering(_ container: Container, for scrollView: UIScrollView?) {
-        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLayer.player == container.player }).first else { return }
-        guard let status = container.bufferingStatus() else { return }
-        cell.videoView.update(status: status, container: container)
-        cell.video(cell, didChangeStatus: status, withContainer: container)
-    }
-    
-    /** Sync view after transition */
-    public func sync(for viewController: UIViewController?) {
-        let scrollView = (viewController as? VideoViewController)?.videoController.scrollView
-        self.visibleCells(for: scrollView).compactMap({ $0.videoView }).forEach({
-            $0.setupControlsTimer()
-        })
-        Video.shared.sync(for: scrollView)
     }
     
     /** Call when the app is going to background */

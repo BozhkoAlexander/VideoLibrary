@@ -46,7 +46,7 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        videoController.setupScrollView(detailsView.collectionView)
+        videoController.setup(detailsView.collectionView, for: self)
 
         detailsView.closeButton.addTarget(self, action: #selector(self.closePressed(_:)), for: .touchUpInside)
         enabledInteractiveDismissal()
