@@ -44,9 +44,9 @@ extension DetailsTransition {
                 context.completeTransition(false)
                 return
             }
-            if let sender = sender, let superview = sender.superview  {
-                scale = sender.frame.width / fromView.frame.width
-                finalFrame = superview.convert(sender.frame, to: container)
+            if let videoView = sender?.videoView, let superview = videoView.superview  {
+                scale = videoView.frame.width / fromView.frame.width
+                finalFrame = superview.convert(videoView.frame, to: container)
             }
             fromView.clipsToBounds = true
         }

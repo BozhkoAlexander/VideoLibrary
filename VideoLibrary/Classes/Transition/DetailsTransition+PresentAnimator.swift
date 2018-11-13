@@ -46,12 +46,12 @@ extension DetailsTransition {
             toView.clipsToBounds = true
 
 
-            if let sender = sender, let superview = sender.superview {
-                initialFrame = superview.convert(sender.frame, to: container)
+            if let videoView = sender?.videoView, let superview = videoView.superview {
+                initialFrame = superview.convert(videoView.frame, to: container)
                 scale = initialFrame.width / container.bounds.width
                 
                 toView.frame.size.height = toView.bounds.width * initialFrame.height / initialFrame.width
-                toView.layer.cornerRadius = sender.layer.cornerRadius
+                toView.layer.cornerRadius = sender!.layer.cornerRadius
                 toView.transform = CGAffineTransform(scaleX: scale, y: scale)
                 toView.center = CGPoint(x: initialFrame.midX, y: initialFrame.midY)
                 var topInset = UIApplication.shared.statusBarFrame.height
