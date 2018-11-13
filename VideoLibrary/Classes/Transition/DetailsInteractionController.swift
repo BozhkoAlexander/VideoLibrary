@@ -45,7 +45,11 @@ extension UIViewController {
     // MARK: - Helpers
     
     private var transition: DetailsTransition? {
-        return transitioningDelegate as? DetailsTransition
+        if let transition = transitioningDelegate as? DetailsTransition {
+            return transition
+        } else {
+            return navigationController?.transitioningDelegate as? DetailsTransition
+        }
     }
     
     private func startDismissal(_ pan: UIPanGestureRecognizer) {
