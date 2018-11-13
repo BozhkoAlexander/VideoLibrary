@@ -7,8 +7,9 @@
 #  Copyright © 2018 CocoaPods. All rights reserved.
 
 # pod lib lint
+VERSION=$1
 echo Release VideoLibrary v.$1
 git add -A
-git commit -m "release `$1`"
+git commit -m "release $VERSION"
 git tag $1
 git push
