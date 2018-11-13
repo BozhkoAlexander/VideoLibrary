@@ -1,62 +1,35 @@
 //
-//  DetailsTransition.swift
-//  video app
+//  NewTransition.swift
+//  VideoLibrary
 //
-//  Created by Alexander Bozhko on 23/08/2018.
-//  Copyright © 2018 Filmgrail AS. All rights reserved.
+//  Created by Alexander Bozhko on 09/11/2018.
 //
 
 import UIKit
 
 public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate {
     
-    /** superview of video view */
-    private weak var initialSuperview: UIView? = nil
-    
-    /** Start frame of video view realted to window */
-    private var initialFrame: CGRect? = nil
-    
-    /** Sender view is used to set animated properties to transition proccess */
-    public var sender: UIView? = nil
-    
-    /** Video view is used for animated video transfer */
-    public var videoView: VideoView? = nil
-    
-    /** Controller for interactive dismissal */
     var interactionController: DetailsInteractionController? = nil
     
-    public init(sender: UIView?, videoView: VideoView? = nil) {
+    public var sender: VideoCell? = nil
+    
+    public init(sender: VideoCell?) {
         super.init()
-        
-        self.initialSuperview = videoView?.superview
-        self.initialFrame = initialSuperview?.convert(videoView!.frame, to: nil)
-        
         self.sender = sender
-        self.videoView = videoView
     }
     
+    // MARK: Transitioning delegate
+    
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let animator = PresentAnimator(videoView: videoView, sender: sender)
-        if let delegate = presented as? DetailsAnimatorDelegate {
-            animator.delegate = delegate
-        } else if let nc = (presented as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
-            animator.delegate = delegate
-        }
-        return animator
+        return PresentAnimator(sender)
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let isInteractive = interactionController != nil
-        let animator = DismissAnimator(videoView: videoView, finalFrame: initialFrame, finalSuperview: initialSuperview, isInteractive: isInteractive)
-        if let delegate = dismissed as? DetailsAnimatorDelegate {
-            animator.delegate = delegate
-        } else if let nc = (dismissed as? UINavigationController), let delegate = nc.viewControllers.last as? DetailsAnimatorDelegate {
-            animator.delegate = delegate
-        }
-        return animator
+        return DismissAnimator(sender)
     }
     
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        (animator as? DismissAnimator)?.isInteractive = interactionController != nil
         return interactionController
     }
     

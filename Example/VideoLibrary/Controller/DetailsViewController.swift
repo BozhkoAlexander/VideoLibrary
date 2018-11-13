@@ -9,7 +9,7 @@
 import UIKit
 import VideoLibrary
 
-class DetailsViewController: ViewController, VideoViewController, DetailsAnimatorDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class DetailsViewController: ViewController, VideoViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     // MARK: - Transitioning
     
@@ -26,13 +26,14 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
     
     // MARK: - Life cycle
     
-    init(_ item: HomeItem, sender: UIView?, videoView: VideoView? = nil) {
+    init(_ item: HomeItem, sender: VideoCell?) {
         self.item = item
         super.init(nibName: nil, bundle: nil)
         
-        self.transition = DetailsTransition(sender: sender, videoView: videoView)
+        self.transition = DetailsTransition(sender: sender)
+        self.transitioningDelegate = transition
+        
         self.modalPresentationStyle = .custom
-        self.transitioningDelegate = self.transition
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -70,37 +71,12 @@ class DetailsViewController: ViewController, VideoViewController, DetailsAnimato
         if let nc = vc as? UINavigationController {
             vc = nc.viewControllers.last
         }
-        if transition?.videoView == nil {
+        if transition?.sender == nil {
             Video.shared.forceVideo = nil
         }
         self.dismiss(animated: true) {
             Video.shared.sync(for: vc)
         }
-    }
-    
-    // MARK: - Details animator delegate
-    
-    func prepare(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool) {
-        detailsView.closeButton.alpha = 0
-        detailsView.collectionView?.collectionViewLayout.invalidateLayout()
-    }
-    
-    func animate(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool) {}
-    
-    func finish(using transitionContext: UIViewControllerContextTransitioning, isPresentation: Bool) {
-        guard isPresentation || transitionContext.transitionWasCancelled else {
-            if let videoView = (transitioningDelegate as? DetailsTransition)?.videoView {
-                videoView.stopPauseTimer()
-            }
-            return
-        }
-        if let videoView = (transitioningDelegate as? DetailsTransition)?.videoView {
-            headerView?.replace(videoView: videoView)
-            headerView?.setNeedsLayout()
-        }
-        UIView.animate(withDuration: 0.25, animations: { [weak self] in
-            self?.detailsView.closeButton.alpha = 1
-        })
     }
     
     // MARK: - Collection view delegate & data source

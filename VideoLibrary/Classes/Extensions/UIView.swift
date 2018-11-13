@@ -17,7 +17,7 @@ extension UIView {
     }
     
     func addBlurView() {
-        guard !UIAccessibility.isReduceTransparencyEnabled && blurView == nil else { return }
+        guard !UIAccessibility.isReduceTransparencyEnabled && !UIDevice.current.isWeak && blurView == nil else { return }
         let effectView = UIVisualEffectView()
         effectView.accessibilityIdentifier = "blur"
         effectView.frame = bounds

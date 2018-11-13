@@ -21,7 +21,7 @@ extension UIViewController {
             cancelDismissal(pan)
             return
         }
-        let height = UIScreen.main.bounds.height
+        let height = (UIScreen.main.bounds.height / 2)
         let point = pan.translation(in: nil)
         let velocity = pan.velocity(in: nil).y
         let progress = min(1, max(0, point.y / height))
@@ -29,7 +29,11 @@ extension UIViewController {
         case .changed where transition.interactionController == nil && point.y > 0:
             startDismissal(pan)
         case .changed:
-            transition.interactionController?.update(progress)
+            if progress > 0.5 {
+                finishDismissal(pan)
+            } else {
+                transition.interactionController?.update(progress)
+            }
         case .ended where (velocity > 0) || (velocity == 0 && progress > 0.4):
             finishDismissal(pan)
         case .ended,
@@ -41,10 +45,7 @@ extension UIViewController {
     // MARK: - Helpers
     
     private var transition: DetailsTransition? {
-        if let transition = transitioningDelegate as? DetailsTransition {
-            return transition
-        }
-        return navigationController?.transitioningDelegate as? DetailsTransition
+        return transitioningDelegate as? DetailsTransition
     }
     
     private func startDismissal(_ pan: UIPanGestureRecognizer) {

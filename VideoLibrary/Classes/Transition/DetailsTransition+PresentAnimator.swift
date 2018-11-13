@@ -1,8 +1,8 @@
 //
-//  DetailsTransition+PresentAnimator.swift
+//  NewTransition+PresentAnimator.swift
 //  VideoLibrary
 //
-//  Created by Alexander Bozhko on 05/09/2018.
+//  Created by Alexander Bozhko on 09/11/2018.
 //
 
 import UIKit
@@ -11,157 +11,92 @@ extension DetailsTransition {
     
     class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
-        /** This view is used for animated video view transfer */
-        private var videoView: VideoView? = nil
+        private var sender: VideoCell? = nil
         
-        /** Delegate for additional animations during the transition */
-        public var delegate: DetailsAnimatorDelegate? = nil
+        private var initialFrame: CGRect = .zero
+        private var scale: CGFloat = 1
         
-        private let moveDuration: TimeInterval = 0.35
-        private let expandDuration: TimeInterval = 0.35
+        private let duration: TimeInterval = 0.5
         
-        init(videoView: VideoView?, sender: UIView?) {
+        init(_ sender: VideoCell?) {
             super.init()
-            self.videoView = videoView
+            self.sender = sender
         }
         
-        // MARK: - Transitioning context
+        // MARK: Transitioning
         
         func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-            return moveDuration + expandDuration
+            return duration
         }
         
         func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-            let videoView = self.videoView
-            let delegate = self.delegate
-            
             prepare(using: transitionContext)
             animate(using: transitionContext) {
-                PresentAnimator.complete(using: transitionContext, videoView: videoView, delegate: delegate)
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+                PresentAnimator.complete(using: transitionContext)
             }
         }
         
-        // MARK: - Helpers
-        
         private func prepare(using context: UIViewControllerContextTransitioning) {
-            guard
-                let fromVC = context.viewController(forKey: .from),
-                let toVC = context.viewController(forKey: .to),
-                let fromView = fromVC.view,
-                let toView = toVC.view else {
-                    context.completeTransition(false)
-                    return
-            }
-            delegate?.prepare(using: context, isPresentation: true)
             let container = context.containerView
-            
-            // calculate initial frame
-            var initialFrame: CGRect! = videoView?.superview?.convert(videoView!.frame, to: container)
-            var toViewInitialFrame = context.finalFrame(for: toVC)
-            toViewInitialFrame.origin.y = toViewInitialFrame.maxY
-            if initialFrame == nil {
-                initialFrame = toViewInitialFrame
+            guard let toView = context.view(forKey: .to), let fromView = context.viewController(forKey: .from)?.view else {
+                context.completeTransition(false)
+                return
             }
-            videoView?.frame = initialFrame
-            toView.frame = toViewInitialFrame
-            
-            // apply initial properties
-            toView.applyProperties()
-            videoView?.applyProperties()
-            
-            // add members to transition container
-            container.addSubview(toView)
-            if let videoView = videoView {
-                container.addSubview(videoView)
+            toView.frame = container.bounds
+            toView.clipsToBounds = true
+
+
+            if let sender = sender, let superview = sender.superview {
+                initialFrame = superview.convert(sender.frame, to: container)
+                scale = initialFrame.width / container.bounds.width
                 
-                let k = videoView.frame.width / toView.frame.width
-                toView.transform = toView.transform.scaledBy(x: k, y: k)
-                toView.frame = videoView.frame
+                toView.frame.size.height = toView.bounds.width * initialFrame.height / initialFrame.width
+                toView.layer.cornerRadius = sender.layer.cornerRadius
+                toView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                toView.center = CGPoint(x: initialFrame.midX, y: initialFrame.midY)
+                var topInset = UIApplication.shared.statusBarFrame.height
+                if #available(iOS 11.0, *) {
+                    topInset = fromView.safeAreaInsets.top
+                }
+                toView.frame.origin.y -= round(scale * topInset)
             } else {
-                let center = toView.center
-                toView.transform = toView.transform.scaledBy(x: 0.9, y: 0.9)
-                toView.center = center
+                scale = 0.9
+                
+                toView.layer.cornerRadius = 20
+                toView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                
+                toView.center.x = container.bounds.midX
+                toView.frame.origin.y = container.bounds.maxY
             }
-            
-            //add blur
-            fromView.addBlurView()
+
+            container.addBlurView()
+            container.addSubview(toView)
         }
         
         private func animate(using context: UIViewControllerContextTransitioning, with completion: (() -> Void)?) {
-            delegate?.animate(using: context, isPresentation: true)
-            UIView.animate(withDuration: moveDuration, delay: 0, options: .curveEaseIn, animations: { [weak self] in
-                self?.move(using: context)
-                }, completion: nil)
-            UIView.animate(withDuration: expandDuration, delay: moveDuration, options: .curveEaseOut, animations: { [weak self] in
-                self?.expand(using: context)
-            }) { _ in
+            let container = context.containerView
+            guard let toView = context.view(forKey: .to) else {
+                context.completeTransition(false)
+                return
+            }
+            let stepDuration = 0.5 * duration
+            let scale = self.scale
+            UIView.animate(withDuration: stepDuration, delay: 0, options: .curveEaseInOut, animations: {
+                toView.frame.size.height = round(container.bounds.height * scale)
+                toView.center = CGPoint(x: container.bounds.midX, y: container.bounds.midY)
+                container.enableBlur()
+            })
+            UIView.animate(withDuration: stepDuration, delay: stepDuration, options: .curveEaseInOut, animations: {
+                toView.transform = CGAffineTransform.identity
+                toView.layer.cornerRadius = 0
+                toView.frame = container.bounds
+            }) { (_) in
                 completion?()
             }
         }
         
-        private func move(using context: UIViewControllerContextTransitioning) {
-            guard
-                let fromVC = context.viewController(forKey: .from),
-                let toVC = context.viewController(forKey: .to),
-                let fromView = fromVC.view,
-                let toView = toVC.view else {
-                    context.completeTransition(false)
-                    return
-            }
-            
-            // move members
-            var finalFrame = context.finalFrame(for: toVC)
-            var safeInset: UIEdgeInsets! = nil
-            if #available(iOS 11.0, *) {
-                safeInset = fromView.safeAreaInsets
-            } else {
-                safeInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.maxY, left: 0, bottom: 0, right: 0)
-            }
-            finalFrame = finalFrame.inset(by: safeInset)
-            
-            let k = finalFrame.width / toView.frame.width
-            let y = finalFrame.minY + round((k - 1) * 0.5 * toView.frame.height)
-            toView.frame.origin.y = y
-            videoView?.frame.origin.y = y
-            toView.center.x = finalFrame.midX
-            videoView?.center.x = finalFrame.midX
-            toView.frame.size.height = round(k * finalFrame.height)
-            
-            // enbale blur
-            fromView.enableBlur()
-        }
-        
-        private func expand(using context: UIViewControllerContextTransitioning) {
-            guard
-                let toVC = context.viewController(forKey: .to),
-                let toView = toVC.view else {
-                    context.completeTransition(false)
-                    return
-            }
-            let finalFrame = context.finalFrame(for: toVC)
-            
-            let k = finalFrame.width / toView.frame.width
-            videoView?.transform = videoView!.transform.scaledBy(x: k, y: k)
-            
-            // apply properties to members
-            toView.removeProperties()
-            videoView?.removeProperties()
-            
-            toView.transform = .identity
-            toView.frame = context.finalFrame(for: toVC)
-        }
-        
-        private class func complete(using context: UIViewControllerContextTransitioning, videoView: VideoView?, delegate: DetailsAnimatorDelegate?) {
-            // normalize transform
-            if let videoView = videoView {
-                let frame = videoView.frame
-                videoView.transform = .identity
-                videoView.frame = frame
-            }
-            
-            videoView?.removeFromSuperview()
-            delegate?.finish(using: context, isPresentation: true)
+        private class func complete(using context: UIViewControllerContextTransitioning) {
+            context.completeTransition(!context.transitionWasCancelled)
         }
         
     }

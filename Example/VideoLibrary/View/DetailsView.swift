@@ -50,6 +50,8 @@ class DetailsView: UIView {
         
         setupCollectionView(for: vc)
         setupCloseButton()
+        
+        backgroundColor = .purple
     }
     
     required init?(coder aDecoder: NSCoder) {
