@@ -129,7 +129,7 @@ public extension Video {
                 if player.rate > 0 {
                     return .playing
                 } else {
-                    return .stopped
+                    return item.currentTime() == CMTime.zero ? .stopped : .paused
                 }
             }
             return nil
