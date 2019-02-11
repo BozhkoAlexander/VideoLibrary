@@ -238,7 +238,7 @@ public class VideoView: UIImageView {
     
     // MARK: - Update status
     
-    func update(status: Video.Status, container: Video.Container?) {
+    public func update(status: Video.Status, container: Video.Container?) {
         switch status {
         case .empty:
             setVideoOpacity(0)
