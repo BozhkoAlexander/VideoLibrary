@@ -231,7 +231,7 @@ public class Video: NSObject {
         self.play(cell, delta: delta, for: viewController, container: current)
     }
     
-    public func play(_ cell: VideoCell, delta: CGFloat = 0, for viewController: UIViewController? = nil, container: Container? = nil) {
+    public func play(_ cell: VideoElement, delta: CGFloat = 0, for viewController: UIViewController? = nil, container: Container? = nil) {
         if let container = container {
             if cell.videoView.autoplay || cell.videoView.videoLink == forceVideo {
                 container.play()
