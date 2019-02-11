@@ -276,8 +276,9 @@ public class Video: NSObject {
     
     /** Call when it needs to simulate Pause button press */
     public func pause() {
-        let playing = loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) }).filter({ $0.player.rate > 0 })
-        playing.forEach({
+        let playing = loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) })
+        playing.forEach({ $0.pause() })
+        playing.filter({ $0.player.rate > 0 }).forEach({
             guard let link = ($0.item.asset as? AVURLAsset)?.url.absoluteString else { return }
             NotificationCenter.default.post(name: .VideoPausePressed, object: link)
         })
@@ -285,8 +286,9 @@ public class Video: NSObject {
     
     /** Call when the video view did end displaying and it needs to stop a played video */
     public func stop() {
-        let playing = loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) }).filter({ $0.player.rate > 0 })
-        playing.forEach({
+        let playing = loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) })
+        playing.forEach({ $0.stop() })
+        playing.filter({ $0.player.rate > 0 }).forEach({
             guard let link = ($0.item.asset as? AVURLAsset)?.url.absoluteString else { return }
             NotificationCenter.default.post(name: .VideoStop, object: link)
         })
