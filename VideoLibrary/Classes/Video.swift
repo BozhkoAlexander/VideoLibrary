@@ -236,6 +236,7 @@ public class Video: NSObject {
             if cell.videoView.autoplay || cell.videoView.videoLink == forceVideo {
                 container.play()
                 cell.videoView.setContainer(container)
+                let status = container.bufferingStatus() ?? .loading
                 cell.videoView.update(status: .playing, container: container)
                 cell.video(cell, didChangeStatus: .playing, withContainer: nil)
             } else {
