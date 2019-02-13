@@ -237,8 +237,8 @@ public class Video: NSObject {
                 container.play()
                 cell.videoView.setContainer(container)
                 let status = container.bufferingStatus() ?? .loading
-                cell.videoView.update(status: .playing, container: container)
-                cell.video(cell, didChangeStatus: .playing, withContainer: nil)
+                cell.videoView.update(status: status, container: container)
+                cell.video(cell, didChangeStatus: status, withContainer: nil)
             } else {
                 cell.videoView.update(status: .stopped, container: container)
                 cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
