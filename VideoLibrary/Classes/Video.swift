@@ -126,7 +126,7 @@ public class Video: NSObject {
     }
     
     /** Pause video by pressing pause button */
-    public func pause(_ link: String, cell: VideoCell? = nil, for scrollView: UIScrollView?) {
+    public func pause(_ link: String, cell: VideoCell? = nil, for controller: VideoController?) {
         self.forceVideo = nil
         if let container = Cache.videos.object(forKey: link as NSString) {
             container.pause()
@@ -135,30 +135,33 @@ public class Video: NSObject {
             // video did end displaying
             cell.videoView.update(status: .stopped, container: nil)
             cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
-        } else if let cell = self.visibleCells(for: scrollView).filter({ $0.videoView.videoLink == link }).first {
+        } else if let element = controller?.element(for: link) {
             // video paused by play button
-            cell.videoView.update(status: .paused, container: nil)
-            cell.video(cell, didChangeStatus: .paused, withContainer: nil)
+            element.videoView.update(status: .paused, container: nil)
+            element.video(element, didChangeStatus: .paused, withContainer: nil)
         }
     }
     
     /** Stop video after it ends */
-    public func finish(_ link: String, for scrollView: UIScrollView?) {
+    public func finish(_ link: String, for controller: VideoController?) {
         forceVideo = nil
         if let container = Cache.videos.object(forKey: link as NSString) {
             container.stop()
         }
-        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLink == link }).first else { return }
-        cell.videoView.update(status: .ended, container: nil)
-        cell.video(cell, didChangeStatus: .ended, withContainer: nil)
+        guard let element = controller?.element(for: link) else { return }
+        element.videoView.update(status: .ended, container: nil)
+        element.video(element, didChangeStatus: .ended, withContainer: nil)
+
     }
     
     /** Buffering for a video */
-    public func buffering(_ container: Container, for scrollView: UIScrollView?) {
-        guard let cell = self.visibleCells(for: scrollView).filter({ $0.videoView?.videoLayer.player == container.player }).first else { return }
+    public func buffering(_ container: Container, for controller: VideoController?) {
         guard let status = container.bufferingStatus() else { return }
-        cell.videoView.update(status: status, container: container)
-        cell.video(cell, didChangeStatus: status, withContainer: container)
+        let link = (container.player.currentItem?.asset as? AVURLAsset)?.url.absoluteString
+        if let element = controller?.element(for: link) {
+            element.videoView.update(status: status, container: container)
+            element.video(element, didChangeStatus: status, withContainer: container)
+        }
     }
     
     /** Sync view controller */
@@ -170,7 +173,7 @@ public class Video: NSObject {
             }
             return
         }
-        let visibleVideos = self.visibleCells(for: scrollView).filter({ $0.videoView != nil })
+        let visibleVideos = scrollView.visibleVideoCells
         visibleVideos.forEach({
             $0.videoView?.setupControlsTimer()
         })
@@ -293,17 +296,6 @@ public class Video: NSObject {
             guard let link = ($0.item.asset as? AVURLAsset)?.url.absoluteString else { return }
             NotificationCenter.default.post(name: .VideoStop, object: link)
         })
-    }
-    
-    // MARK: - Helpers
-    
-    private func visibleCells(for scrollView: UIScrollView?) -> Array<VideoCell> {
-        if let collectionView = scrollView as? UICollectionView {
-            return collectionView.visibleCells.compactMap({ $0 as? VideoCell })
-        } else if let tableView = scrollView as? UITableView {
-            return tableView.visibleCells.compactMap({ $0 as? VideoCell })
-        }
-        return []
     }
     
 }

@@ -17,6 +17,8 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     // MARK: - Properties
     
+    public var videoView: VideoElement? = nil // if the view controller has no scroll view, there is possibility to have one video view on the page
+    
     weak var scrollView: UIScrollView? = nil
     
     weak var viewController: UIViewController? = nil
@@ -49,11 +51,21 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         NotificationCenter.default.removeObserver(self, name: .VideoResync, object: nil)
     }
     
+    // MARK: Public methods
+    
+    public func element(for video: String?) -> VideoElement? {
+        if let cell = scrollView?.visibleVideoCells.filter({ $0.videoView.videoLink == video }).first {
+            return cell
+        } else {
+            return videoView
+        }
+    }
+    
     // MARK: - AVPlayer notifications
     
     @objc func itemDidPlayToEndTime(_ notification: Notification) {
         guard let link = ((notification.object as? AVPlayerItem)?.asset as? AVURLAsset)?.url.absoluteString else { return }
-        Video.shared.finish(link, for: scrollView)
+        Video.shared.finish(link, for: self)
     }
     
     @objc func playerRouteChanged(_ notification: Notification) {
@@ -69,7 +81,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     @objc func itemBuffering(_ notification: Notification) {
         guard let container = notification.object as? Video.Container else { return }
-        Video.shared.buffering(container, for: scrollView)
+        Video.shared.buffering(container, for: self)
     }
     
     @objc func itemPlayPressed(_ notification: Notification) {
@@ -80,7 +92,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     @objc func itemPausePressed(_ notification: Notification) {
         guard let link = notification.object as? String else { return }
-        Video.shared.pause(link, for: scrollView)
+        Video.shared.pause(link, for: self)
     }
     
     @objc func itemStop(_ notification: Notification) {
@@ -91,7 +103,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         } else if let collectionView = scrollView as? UICollectionView {
             cell = collectionView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLink == link }).first
         }
-        Video.shared.pause(link, cell: cell, for: scrollView)
+        Video.shared.pause(link, cell: cell, for: self)
     }
     
     @objc func syncVideo() {
@@ -130,7 +142,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     /** Call in collectionView didEndDisplaying */
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let cell = cell as? VideoCell, let link = cell.videoView?.videoLink {
-            Video.shared.pause(link, cell: cell, for: collectionView)
+            Video.shared.pause(link, cell: cell, for: self)
         }
     }
     
@@ -143,7 +155,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     /** Call in tablView didEndDisplaying */
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let cell = cell as? VideoCell, let link = cell.videoView.videoLink {
-            Video.shared.pause(link, cell: cell, for: tableView)
+            Video.shared.pause(link, cell: cell, for: self)
         }
     }
     
@@ -155,7 +167,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
 }
 
-private extension UIScrollView {
+extension UIScrollView {
     
     var visibleVideoCells: Array<VideoCell> {
         if let tableView = self as? UITableView {
