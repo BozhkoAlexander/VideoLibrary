@@ -107,15 +107,18 @@ public extension Video {
         // MARK: - Player interaction
         
         public func play() {
+            isPlaying = true
             self.player.play()
         }
         
         public func stop() {
+            isPlaying = false
             self.player.seek(to: CMTime.zero)
             self.player.pause()
         }
         
         public func pause() {
+            isPlaying = false
             self.player.pause()
         }
         
