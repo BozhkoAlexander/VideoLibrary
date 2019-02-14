@@ -43,6 +43,8 @@ public extension Video {
         
         // MARK: - Properties
         
+        public var isPlaying = true // if true then it needs to play video asap, else it needs to pause video
+        
         public var player: AVPlayer
         public var item: AVPlayerItem
 
@@ -129,6 +131,7 @@ public extension Video {
                 if player.rate > 0 {
                     return .playing
                 } else {
+                    if isPlaying { return nil }
                     return item.currentTime() == CMTime.zero ? .stopped : .paused
                 }
             }
