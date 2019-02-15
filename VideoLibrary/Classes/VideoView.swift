@@ -39,7 +39,7 @@ public class VideoView: UIImageView {
     
     // MARK: - Properties
     
-    public var hidesWhenStopped = false // hide video layer when video is stopped
+    public var hidesWhenStopped = true // hide video layer when video is stopped
         
     public var videoLink: String? = nil
     public var autoplay: Bool = false
