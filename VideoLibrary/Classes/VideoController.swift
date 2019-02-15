@@ -119,9 +119,17 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     // MARK: - Feature methods (needs to be called in view controller which support video view)
     
     /** Call in viewDidLoad */
+    public func setup(_ videoElement: VideoElement, for viewController: UIViewController?) {
+        self.videoView = videoElement
+        self.viewController = viewController
+        self.scrollView = nil
+    }
+    
+    /** Call in viewDidLoad */
     public func setup(_ scrollView: UIScrollView?, for viewController: UIViewController?) {
         self.scrollView = scrollView
         self.viewController = viewController
+        self.videoView = nil
     }
     
     /** Call in viewDidAppear and any other place where needs to resync video. */

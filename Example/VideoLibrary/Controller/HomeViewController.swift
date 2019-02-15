@@ -29,7 +29,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         super.viewDidLoad()
 
         title = "Home"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Random", style: .plain, target: self, action: #selector(self.randomPage))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Details", style: .plain, target: self, action: #selector(self.detailsPage))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Switch", style: .plain, target: self, action: #selector(self.switchPage))
         
         videoController.setup(homeView.collectionView, for: self)
@@ -78,11 +78,8 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         AppDelegate.shared.restart()
     }
     
-    @objc func randomPage() {
-//        guard let item = items.shuffled().first else { return }
-//        let vc = DetailsViewController(item, sender: nil)
-//        self.present(vc, animated: true)
-        let vc = ViewController()
+    @objc func detailsPage() {
+        let vc = StoryViewController()
         self.present(vc, animated: true)
     }
     

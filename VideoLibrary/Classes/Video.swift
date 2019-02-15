@@ -166,52 +166,59 @@ public class Video: NSObject {
     
     /** Sync view controller */
     public func sync(for viewController: UIViewController?) {
-        guard let scrollView = (viewController as? VideoViewController)?.videoController.scrollView else {
+        // calculate current video
+        var result: (delta: CGFloat, cell: VideoElement)? = nil
+        let isPresented = viewController == UIViewController.presented()
+        var visibleVideos = Array<VideoCell>()
+        
+        if let element = (viewController as? VideoViewController)?.videoController.videoView, isPresented { // if there is no scroll view, just simple video element in the view
+            if element.videoView.autoplay {
+                result = (delta: 0, cell: element)
+            }
+        } else if let scrollView = (viewController as? VideoViewController)?.videoController.scrollView { // if there is scroll view
+            visibleVideos = scrollView.visibleVideoCells
+            visibleVideos.forEach({
+                $0.videoView?.setupControlsTimer()
+            })
+            var visibleFrame = scrollView.bounds
+            if #available(iOS 11.0, *) {
+                visibleFrame = scrollView.bounds.inset(by: scrollView.safeAreaInsets)
+            }
+            let center = round(visibleFrame.midY)
+            
+            // there is forced video (play button pressed)
+            if let link = forceVideo, !link.isEmpty && isPresented {
+                if let cell = visibleVideos.filter({ $0.videoView?.videoLink == link }).first {
+                    result = (delta: 0, cell: cell)
+                }
+            }
+            // if there is no force link (usual way)
+            if result == nil && isPresented {
+                let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoElement)? in
+                    guard let videoFrame = cell.videoView?.frame, cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
+                    let midY = cell.convert(videoFrame, to: scrollView).midY
+                    var delta = abs(center - midY)
+                    if cell.frame.minY < cell.bounds.midY || // for the first element
+                        (scrollView.contentSize.height - cell.frame.maxY) < cell.bounds.midY { // for the last element
+                        var insetFrame = scrollView.frame
+                        if #available(iOS 11.0, *) {
+                            insetFrame = scrollView.frame.inset(by: scrollView.safeAreaInsets)
+                        }
+                        let visibleHeight = cell.convert(videoFrame, to: nil).intersection(insetFrame).height
+                        if visibleHeight >= videoFrame.height {
+                            delta = 0
+                        }
+                    }
+                    return (delta: delta, cell: cell)
+                })
+                result = results.sorted(by: { $0.delta < $1.delta }).first
+            }
+        } else { // there is nothing to play, stop all videos
             loadedKeys.forEach { (link) in
                 guard link != forceVideo, let container = Cache.videos.object(forKey: link as NSString) else { return }
                 container.stop()
             }
             return
-        }
-        let visibleVideos = scrollView.visibleVideoCells
-        visibleVideos.forEach({
-            $0.videoView?.setupControlsTimer()
-        })
-
-        var visibleFrame = scrollView.bounds
-        if #available(iOS 11.0, *) {
-            visibleFrame = scrollView.bounds.inset(by: scrollView.safeAreaInsets)
-        }
-        let center = round(visibleFrame.midY)
-        // calculate current video
-        var result: (delta: CGFloat, cell: VideoCell)? = nil
-        let isPresented = viewController == UIViewController.presented()
-        // if there is force link (play button pressed)
-        if let link = forceVideo, !link.isEmpty && isPresented {
-            if let cell = visibleVideos.filter({ $0.videoView?.videoLink == link }).first {
-                result = (delta: 0, cell: cell)
-            }
-        }
-        // if there is no force link (usual way)
-        if result == nil && isPresented {
-            let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoCell)? in
-                guard let videoFrame = cell.videoView?.frame, cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
-                let midY = cell.convert(videoFrame, to: scrollView).midY
-                var delta = abs(center - midY)
-                if cell.frame.minY < cell.bounds.midY || // for the first element
-                    (scrollView.contentSize.height - cell.frame.maxY) < cell.bounds.midY { // for the last element
-                    var insetFrame = scrollView.frame
-                    if #available(iOS 11.0, *) {
-                        insetFrame = scrollView.frame.inset(by: scrollView.safeAreaInsets)
-                    }
-                    let visibleHeight = cell.convert(videoFrame, to: nil).intersection(insetFrame).height
-                    if visibleHeight >= videoFrame.height {
-                        delta = 0
-                    }
-                }
-                return (delta: delta, cell: cell)
-            })
-            result = results.sorted(by: { $0.delta < $1.delta }).first
         }
         
         // try to get current loaded container
@@ -221,7 +228,7 @@ public class Video: NSObject {
         }
         // stop all videos except current
         visibleVideos.forEach({ cell in
-            guard result == nil || cell as UIView != result!.cell as UIView else { return }
+            guard result == nil || cell.videoView != result?.cell.videoView else { return }
             cell.videoView.update(status: .stopped, container: nil)
             cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
         })
