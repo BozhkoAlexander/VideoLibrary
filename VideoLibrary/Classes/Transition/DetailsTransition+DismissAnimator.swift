@@ -44,6 +44,9 @@ extension DetailsTransition {
                 context.completeTransition(false)
                 return
             }
+            let toVC = context.viewController(forKey: .to)
+            toVC?.beginAppearanceTransition(true, animated: true)
+            
             if let videoView = sender?.videoView, let superview = videoView.superview  {
                 scale = videoView.frame.width / fromView.frame.width
                 finalFrame = superview.convert(videoView.frame, to: container)
@@ -98,6 +101,12 @@ extension DetailsTransition {
                 context.containerView.removeBlurView()
             }
             context.completeTransition(!context.transitionWasCancelled)
+            
+            let toVC = context.viewController(forKey: .to)
+            if context.transitionWasCancelled {
+                toVC?.beginAppearanceTransition(false, animated: true)
+            }
+            toVC?.endAppearanceTransition()
         }
         
     }

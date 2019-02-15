@@ -45,6 +45,8 @@ extension DetailsTransition {
             toView.frame = container.bounds
             toView.clipsToBounds = true
 
+            let fromVC = context.viewController(forKey: .from)
+            fromVC?.beginAppearanceTransition(false, animated: true)
 
             if let videoView = sender?.videoView, let superview = videoView.superview {
                 initialFrame = superview.convert(videoView.frame, to: container)
@@ -97,6 +99,11 @@ extension DetailsTransition {
         
         private class func complete(using context: UIViewControllerContextTransitioning) {
             context.completeTransition(!context.transitionWasCancelled)
+            let fromVC = context.viewController(forKey: .from)
+            if context.transitionWasCancelled {
+                fromVC?.beginAppearanceTransition(true, animated: true)
+            }
+            fromVC?.endAppearanceTransition()
         }
         
     }
