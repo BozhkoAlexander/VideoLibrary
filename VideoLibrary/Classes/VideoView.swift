@@ -38,6 +38,8 @@ public extension UIView {
 public class VideoView: UIImageView {
     
     // MARK: - Properties
+    
+    public var hidesWhenStopped = false // hide video layer when video is stopped
         
     public var videoLink: String? = nil
     public var autoplay: Bool = false
@@ -266,7 +268,12 @@ public class VideoView: UIImageView {
             // start hide controls timer
             setupControlsTimer()
         case .stopped:
-            setVideoOpacity(0)
+            if hidesWhenStopped {
+                setVideoOpacity(0)
+            } else {
+                let videoOpacity: Float = videoLink != nil && !videoLink!.isEmpty ? 1 : 0
+                setVideoOpacity(videoOpacity)
+            }
             loader.stopAnimating()
             volumeButton.layer.opacity = 0
             timeLabel.layer.opacity = 0
