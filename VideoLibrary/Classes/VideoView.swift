@@ -374,4 +374,14 @@ public class VideoView: UIImageView {
         }
     }
     
+    // MARK: - Public methods (use only for the simple video view pages, not with scroll views)
+    
+    public func pause() {
+        NotificationCenter.default.post(name: .VideoPausePressed, object: videoLink)
+    }
+    
+    public func resume() {
+        NotificationCenter.default.post(name: .VideoPlayPressed, object: self)
+    }
+    
 }
