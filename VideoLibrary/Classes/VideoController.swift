@@ -86,7 +86,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     @objc func itemPlayPressed(_ notification: Notification) {
         guard let videoView = notification.object as? VideoView else { return }
-        guard let cells = scrollView?.visibleVideoCells.filter({ $0.videoView == videoView }), !cells.isEmpty else { return }
+        guard self.element(for: videoView.videoLink) != nil else { return }
         Video.shared.sync(for: viewController)
     }
     
