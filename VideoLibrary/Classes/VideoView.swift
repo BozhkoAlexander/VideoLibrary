@@ -40,6 +40,7 @@ public class VideoView: UIImageView {
     // MARK: - Properties
     
     public var hidesWhenStopped = true // hide video layer when video is stopped
+    public var disableAutoplayWhenEnded = true // disable autoplay for the second playing if the video has ended
         
     public var videoLink: String? = nil
     public var autoplay: Bool = false
@@ -295,7 +296,9 @@ public class VideoView: UIImageView {
             playButton.isSelected = false
             playButton.layer.opacity = 1
             // disable autoplay
-            self.setVideo(videoLink, autoplay: false)
+            if disableAutoplayWhenEnded {
+                self.setVideo(videoLink, autoplay: false)
+            }
         }
     }
     
