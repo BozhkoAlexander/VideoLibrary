@@ -242,6 +242,10 @@ public class VideoView: UIImageView {
     // MARK: - Update status
     
     public func update(status: Video.Status, container: Video.Container?) {
+        var status = status
+        if videoLink == nil || videoLink!.isEmpty {
+            status = .empty
+        }
         switch status {
         case .empty:
             setVideoOpacity(0)
