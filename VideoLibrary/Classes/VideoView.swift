@@ -338,8 +338,8 @@ public class VideoView: UIImageView {
         videoLayer.frame = layer.bounds
         videoLayer.removeAllAnimations()
 
-        loader.frame.origin.x = bounds.width - offset - loader.frame.width
-        loader.frame.origin.y = bounds.height - offset - loader.frame.height
+        loader.center.x = bounds.midX
+        loader.center.y = bounds.midY
         
         var size = loader.bounds.size
         size.width += 2 * offset
