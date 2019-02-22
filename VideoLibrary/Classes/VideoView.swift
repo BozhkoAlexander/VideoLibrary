@@ -345,8 +345,8 @@ public class VideoView: UIImageView {
         size.width += 2 * offset
         size.height += 2 * offset
         volumeButton.frame.size = size
-        volumeButton.frame.origin.x = bounds.width - offset - volumeButton.frame.width
-        volumeButton.frame.origin.y = bounds.height - offset - volumeButton.frame.height
+        volumeButton.frame.origin.x = bounds.width - size.width
+        volumeButton.frame.origin.y = bounds.height - size.height
         
         if let timeText = timeLabel.text, !timeText.isEmpty {
             timeLabel.frame.size.width = ceil(timeText.boundingRect(with: .zero, font: timeLabel.font).width) + offset
@@ -354,7 +354,7 @@ public class VideoView: UIImageView {
         } else {
             timeLabel.frame.size = .zero
         }
-        timeLabel.center.y = loader.center.y
+        timeLabel.center.y = volumeButton.center.y
         timeLabel.frame.origin.x = offset
         
         playButton.frame.size = playButton.image(for: .normal)!.size
