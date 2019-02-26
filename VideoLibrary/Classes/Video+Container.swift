@@ -54,8 +54,6 @@ public extension Video {
         
         private let kvo = [
             #keyPath(AVPlayerItem.isPlaybackBufferEmpty),
-            #keyPath(AVPlayerItem.isPlaybackBufferFull),
-            #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp),
             #keyPath(AVPlayerItem.status)
         ]
         
@@ -130,15 +128,18 @@ public extension Video {
                 } else {
                     return nil
                 }
-            } else if item.isPlaybackLikelyToKeepUp || item.isPlaybackBufferFull {
-                if player.rate > 0 {
+            } else {
+                if isPlaying {
+                    if #available(iOS 10.0, *) {
+                        player.playImmediately(atRate: 1)
+                    } else {
+                       player.play()
+                    }
                     return .playing
                 } else {
-                    if isPlaying { return nil }
                     return item.currentTime() == CMTime.zero ? .stopped : .paused
                 }
             }
-            return nil
         }
         
     }
