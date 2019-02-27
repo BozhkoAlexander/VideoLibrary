@@ -135,6 +135,7 @@ public extension Video {
                         }
                         return .playing
                     } else {
+                        player.pause()
                         return .loading
                     }
                 } else {
