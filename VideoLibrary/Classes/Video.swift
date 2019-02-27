@@ -104,8 +104,8 @@ public class Video: NSObject {
                 let player = AVPlayer()
                 player.isMuted = this.isMuted
                 let item = AVPlayerItem(asset: asset)
-                let container = Container(player: player, item: item)
                 DispatchQueue.main.async {
+                    let container = Container(player: player, item: item)
                     if !this.loadedKeys.contains(link) {
                         this.loadedKeys.append(link)
                     }
