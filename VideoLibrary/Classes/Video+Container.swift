@@ -52,13 +52,11 @@ public extension Video {
         
         // MARK: - KVO
         
-        private let kvo = [
-            #keyPath(AVPlayerItem.isPlaybackBufferEmpty),
-            #keyPath(AVPlayerItem.status)
-        ]
+        private var bufferKVO: NSKeyValueObservation! = nil
+        private var statusKVO: NSKeyValueObservation! = nil
+        private var timeControlKVO: NSKeyValueObservation! = nil
         
-        override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-            guard keyPath != nil else { return }
+        private func kvoChangeHandler() {
             NotificationCenter.default.post(name: .VideoBuffered, object: self)
         }
         
@@ -77,9 +75,18 @@ public extension Video {
         }
         
         private func addObservers() {
-            kvo.forEach({
-                item.addObserver(self, forKeyPath: $0, options: .new, context: nil)
+            statusKVO = item.observe(\.status, options: .initial, changeHandler: { [weak self] (_, _) in
+                self?.kvoChangeHandler()
             })
+            if #available(iOS 10.0, *) {
+                timeControlKVO = player.observe(\.timeControlStatus, options: .initial, changeHandler: { [weak self] (_, _) in
+                    self?.kvoChangeHandler()
+                })
+            } else {
+                bufferKVO = item.observe(\.isPlaybackBufferEmpty, options: .initial, changeHandler: { [weak self] (_, _) in
+                    self?.kvoChangeHandler()
+                })
+            }
             
             timer = player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: .main) { [weak self] (time) in
                 guard let this = self else { return }
@@ -95,9 +102,9 @@ public extension Video {
         }
         
         private func removeObservers() {
-            kvo.forEach({
-                item.removeObserver(self, forKeyPath: $0)
-            })
+            statusKVO = nil
+            timeControlKVO = nil
+            bufferKVO = nil
             
             timer = nil
         }
@@ -122,15 +129,24 @@ public extension Video {
         
         public func bufferingStatus() -> Status? {
             guard item.status != .failed else { return .empty }
-            if item.isPlaybackBufferEmpty { // if buffer is empty
-                return .loading
+            if #available(iOS 10.0, *) {
+                switch player.timeControlStatus {
+                case .waitingToPlayAtSpecifiedRate: return .loading
+                case .paused: return item.currentTime() == CMTime.zero ? .stopped : .paused
+                case .playing: return .playing
+                }
             } else {
-                if isPlaying { // if we want to play video
-                    return .playing
+                if item.isPlaybackBufferEmpty { // if buffer is empty
+                    return .loading
                 } else {
-                    return item.currentTime() == CMTime.zero ? .stopped : .paused
+                    if isPlaying { // if we want to play video
+                        return .playing
+                    } else {
+                        return item.currentTime() == CMTime.zero ? .stopped : .paused
+                    }
                 }
             }
+
         }
         
     }
