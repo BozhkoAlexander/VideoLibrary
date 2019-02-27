@@ -122,20 +122,21 @@ public extension Video {
         
         public func bufferingStatus() -> Status? {
             guard item.status != .failed else { return .empty }
-            if item.isPlaybackBufferEmpty {
-                if #available(iOS 10.0, *) {
-                    return .loading
-                } else {
-                    return nil
-                }
+            if item.isPlaybackBufferEmpty { // if buffer is empty
+                return .loading
             } else {
-                if isPlaying {
-                    if #available(iOS 10.0, *) {
-                        player.playImmediately(atRate: 1)
+                if isPlaying { // if we want to play video
+                    if item.isPlaybackLikelyToKeepUp || item.isPlaybackBufferFull { // if video will play without stalling of buffer is full
+                        /* isPlaybackLikelyToKeepUp may be false even if buffer is full */
+                        if #available(iOS 10.0, *) {
+                            player.playImmediately(atRate: 1)
+                        } else {
+                            player.play()
+                        }
+                        return .playing
                     } else {
-                       player.play()
+                        return .loading
                     }
-                    return .playing
                 } else {
                     return item.currentTime() == CMTime.zero ? .stopped : .paused
                 }
