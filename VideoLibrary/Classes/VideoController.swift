@@ -56,9 +56,10 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     public func element(for video: String?) -> VideoElement? {
         if let cell = scrollView?.visibleVideoCells.filter({ $0.videoView.videoLink == video }).first {
             return cell
-        } else {
+        } else if videoView?.videoView.videoLink == video {
             return videoView
         }
+        return nil
     }
     
     // MARK: - AVPlayer notifications
