@@ -48,6 +48,9 @@ public class VideoView: UIImageView {
     private var controlsTimer: Timer? = nil
     private var pauseTimer: Timer? = nil
     
+    /// Contains an error occurrs in loading process
+    public var error: Error? = nil
+    
     // MARK: - KVO
     
     private func startObservers() {

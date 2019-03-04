@@ -70,14 +70,20 @@ public class Video: NSObject {
     private var loadedKeys = Array<String>()
     private var loadingKeys = Array<String>()
     
+    /**
+     Loads video asset by the link, creates Container object which contains asset, player and timer info.
+     - Parameters:
+        - link: url link to the video item
+        - callback: callback to be invoked when the loading process is finished
+     */
     public func load(_ link: String?, callback: Callback?) {
         guard let link = link, let url = URL(string: link) else {
-            callback?(nil, false)
+            callback?(nil, false, NSError.unknown)
             return
         }
         guard !loadingKeys.contains(link) else { return }
         if let cached = Cache.videos.object(forKey: link as NSString) {
-            callback?(cached, true)
+            callback?(cached, true, nil)
         } else {
             loadingKeys.append(link)
             let asset = AVURLAsset(url: url)
@@ -94,7 +100,7 @@ public class Video: NSObject {
                 guard status == .loaded else {
                     print("VIDEO: Failed to load asset (\(status.stringValue))")
                     DispatchQueue.main.async {
-                        callback?(nil, false)
+                        callback?(nil, false, error)
                         if let index = this.loadingKeys.index(of: link) {
                             this.loadingKeys.remove(at: index)
                         }
@@ -116,7 +122,7 @@ public class Video: NSObject {
                     this.loadedKeys = this.loadedKeys.filter({ Cache.videos.object(forKey: $0 as NSString) != nil })
                     
                     container.player.replaceCurrentItem(with: container.item)
-                    callback?(container, false)
+                    callback?(container, false, nil)
                     if let index = this.loadingKeys.index(of: link) {
                         this.loadingKeys.remove(at: index)
                     }
@@ -258,7 +264,10 @@ public class Video: NSObject {
                 cell.videoView.update(status: .loading, container: nil)
                 cell.video(cell, didChangeStatus: .loading, withContainer: nil)
             }
-            self.load(link) { [weak self] (container, cached) in
+            cell.videoView.error = nil
+            self.load(link) { [weak self] (container, cached, error) in
+                // TODO: - send error to next methods
+                cell.videoView.error = error
                 guard container != nil else {
                     cell.videoView.update(status: .empty, container: nil)
                     cell.video(cell, didChangeStatus: .empty, withContainer: nil)

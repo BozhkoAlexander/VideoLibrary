@@ -20,6 +20,18 @@ public extension Notification.Name {
     
 }
 
+/** AVPlayer video loading callback
+ - parameters:
+ 
+ @param     container
+ Container object (optional) with additional info
+ @param     isCached
+ if video received from cache the true, otherwise - false
+ @param     error
+ Error object (optional) if an error occurs
+ 
+ */
+
 public extension Video {
     
     /** Video status */
@@ -32,8 +44,15 @@ public extension Video {
         case ended
     }
     
-    /** AVPlayer - retrieved video player, Bool - cached (true) */
-    public typealias Callback = (Container?, Bool) -> Void
+    /**
+     AVPlayer video loading callback
+     
+     - Parameters:
+        - container: Container object (optional) with additional info
+        - isCached: if video received from cache the true, otherwise - false
+        - error: Error object (optional) if an error occurs
+     */
+    public typealias Callback = (_ container: Container?, _ isCached: Bool, _ error: Error?) -> Void
     
     /** The object which is sent in VideoTimer notification */
     public typealias TimerInfo = (Container, String)

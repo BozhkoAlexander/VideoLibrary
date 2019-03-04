@@ -58,6 +58,9 @@ class HomeItemCell: UICollectionViewCell, HomeItemElement, VideoElement {
         switch status {
         case .empty:
             self.item?.video = nil
+            if let info = videoView.error?.localizedDescription {
+                print("INFO: \(info)")
+            }
         case .ended,
              .paused:
             self.item?.autoplay = false
