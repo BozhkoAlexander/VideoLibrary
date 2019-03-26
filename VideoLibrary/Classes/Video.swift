@@ -101,7 +101,7 @@ public class Video: NSObject {
                     print("VIDEO: Failed to load asset (\(status.stringValue))")
                     DispatchQueue.main.async {
                         callback?(nil, false, error)
-                        if let index = this.loadingKeys.index(of: link) {
+                        if let index = this.loadingKeys.firstIndex(of: link) {
                             this.loadingKeys.remove(at: index)
                         }
                     }
@@ -123,7 +123,7 @@ public class Video: NSObject {
                     
                     container.player.replaceCurrentItem(with: container.item)
                     callback?(container, false, nil)
-                    if let index = this.loadingKeys.index(of: link) {
+                    if let index = this.loadingKeys.firstIndex(of: link) {
                         this.loadingKeys.remove(at: index)
                     }
                 }

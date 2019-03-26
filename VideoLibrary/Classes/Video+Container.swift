@@ -11,12 +11,12 @@ import AVKit
 
 public extension Notification.Name {
     
-    public static let VideoBuffered = Notification.Name("videoview-buffering")
-    public static let VideoTimer = Notification.Name("videoview-timer")
-    public static let VideoPlayPressed = Notification.Name("videoview-play")
-    public static let VideoPausePressed = Notification.Name("videoview-pause")
-    public static let VideoStop = Notification.Name("videoview-stop")
-    public static let VideoResync = Notification.Name("videoview-resync")
+    static let VideoBuffered = Notification.Name("videoview-buffering")
+    static let VideoTimer = Notification.Name("videoview-timer")
+    static let VideoPlayPressed = Notification.Name("videoview-play")
+    static let VideoPausePressed = Notification.Name("videoview-pause")
+    static let VideoStop = Notification.Name("videoview-stop")
+    static let VideoResync = Notification.Name("videoview-resync")
     
 }
 
@@ -35,7 +35,7 @@ public extension Notification.Name {
 public extension Video {
     
     /** Video status */
-    public enum Status {
+    enum Status {
         case empty
         case loading
         case playing
@@ -52,13 +52,13 @@ public extension Video {
         - isCached: if video received from cache the true, otherwise - false
         - error: Error object (optional) if an error occurs
      */
-    public typealias Callback = (_ container: Container?, _ isCached: Bool, _ error: Error?) -> Void
+    typealias Callback = (_ container: Container?, _ isCached: Bool, _ error: Error?) -> Void
     
     /** The object which is sent in VideoTimer notification */
-    public typealias TimerInfo = (Container, String)
+    typealias TimerInfo = (Container, String)
     
     /** Video containter */
-    public class Container: NSObject {
+    class Container: NSObject {
         
         // MARK: - Properties
         
@@ -153,6 +153,7 @@ public extension Video {
                 case .waitingToPlayAtSpecifiedRate: return .loading
                 case .paused: return item.currentTime() == CMTime.zero ? .stopped : .paused
                 case .playing: return .playing
+                @unknown default: return .empty
                 }
             } else {
                 if item.isPlaybackBufferEmpty { // if buffer is empty

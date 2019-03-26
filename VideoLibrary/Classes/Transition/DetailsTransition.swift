@@ -39,7 +39,7 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
 
 public extension VideoViewController where Self: UIViewController {
     
-    public func enabledInteractiveDismissal() {
+    func enabledInteractiveDismissal() {
         guard transitioningDelegate is DetailsTransition || navigationController?.transitioningDelegate is DetailsTransition else { return }
         let pan = UIPanGestureRecognizer(target: self, action: #selector(self.handleInteractiveDismissal(_:)))
         pan.delegate = self.videoController
