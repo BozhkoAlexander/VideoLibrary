@@ -63,7 +63,8 @@ class StoryView: UIView, VideoElement {
         }
         
         if let text = closeButton.title(for: .normal) as NSString? {
-            closeButton.frame.size = text.boundingRect(with: .zero, options: .usesLineFragmentOrigin, attributes: [.font: closeButton.titleLabel!.font], context: nil).size
+            let font = closeButton.titleLabel!.font as Any
+            closeButton.frame.size = text.boundingRect(with: .zero, options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil).size
             closeButton.frame.size.width += 40
             closeButton.frame.size.height += 20
         } else {

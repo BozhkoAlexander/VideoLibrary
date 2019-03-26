@@ -325,6 +325,7 @@ private extension AVKeyValueStatus {
         case .loaded: return "loaded"
         case .loading: return "loading"
         case .unknown: return "unknown"
+        @unknown default: return "unknown"
         }
     }
     
