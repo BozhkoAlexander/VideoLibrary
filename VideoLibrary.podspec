@@ -38,6 +38,6 @@ The point in this implementation is videos can be auto playable and non-auto pla
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
 
-  s.swift_version = '4.2'
+  s.swift_version = '5.0'
 
 end
