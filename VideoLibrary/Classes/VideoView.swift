@@ -51,6 +51,17 @@ public class VideoView: UIImageView {
     /// Contains an error occurrs in loading process
     public var error: Error? = nil
     
+    /// Background color of the video layer (visible only when video is playing or paused.
+    public var videoLayerBackgroundColor: UIColor? {
+        get {
+            guard let cg = videoLayer.backgroundColor else { return nil }
+            return UIColor(cgColor: cg)
+        }
+        set {
+            videoLayer.backgroundColor = newValue?.cgColor
+        }
+    }
+    
     // MARK: - KVO
     
     private func startObservers() {
@@ -161,7 +172,7 @@ public class VideoView: UIImageView {
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        return nil
     }
     
     deinit {

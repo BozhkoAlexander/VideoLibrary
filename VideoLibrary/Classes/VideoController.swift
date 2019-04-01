@@ -38,7 +38,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        return nil
     }
     
     deinit {
