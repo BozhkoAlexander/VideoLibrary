@@ -11,14 +11,15 @@ extension DetailsTransition {
     
     class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
-        private var sender: VideoCell? = nil
+        private var sender: UIView? = nil
         
         private var initialFrame: CGRect = .zero
         private var scale: CGFloat = 1
         
-        private let duration: TimeInterval = 0.5
+        private let duration: TimeInterval
         
-        init(_ sender: VideoCell?) {
+        init(_ sender: UIView?) {
+            self.duration = sender != nil ? 0.5 : 0.25
             super.init()
             self.sender = sender
         }
@@ -48,7 +49,7 @@ extension DetailsTransition {
             let fromVC = context.viewController(forKey: .from)
             fromVC?.beginAppearanceTransition(false, animated: true)
 
-            if let videoView = sender?.videoView, let superview = videoView.superview {
+            if let videoView = (sender as? VideoCell)?.videoView, let superview = videoView.superview {
                 initialFrame = superview.convert(videoView.frame, to: container)
                 scale = initialFrame.width / container.bounds.width
                 
@@ -61,12 +62,17 @@ extension DetailsTransition {
                     topInset = fromView.safeAreaInsets.top
                 }
                 toView.frame.origin.y -= round(scale * topInset)
-            } else {
-                scale = 0.9
-                
-                toView.layer.cornerRadius = 20
+            } else if let sender = sender, let superview = sender.superview {
+                initialFrame = superview.convert(sender.frame, to: container)
+                scale = initialFrame.width / container.bounds.width
+                toView.frame.size.height = toView.bounds.width * initialFrame.height / initialFrame.width
+                toView.layer.cornerRadius = sender.layer.cornerRadius
                 toView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                toView.center = CGPoint(x: initialFrame.midX, y: initialFrame.midY)
+            } else {
+                scale = 1
                 
+                toView.layer.cornerRadius = 0
                 toView.center.x = container.bounds.midX
                 toView.frame.origin.y = container.bounds.maxY
             }
@@ -81,14 +87,17 @@ extension DetailsTransition {
                 context.completeTransition(false)
                 return
             }
-            let stepDuration = 0.5 * duration
+            
+            let stepDuration = sender == nil ? duration : 0.5 * duration
             let scale = self.scale
-            UIView.animate(withDuration: stepDuration, delay: 0, options: .curveEaseInOut, animations: {
-                toView.frame.size.height = round(container.bounds.height * scale)
-                toView.center = CGPoint(x: container.bounds.midX, y: container.bounds.midY)
-                container.enableBlur()
-            })
-            UIView.animate(withDuration: stepDuration, delay: stepDuration, options: .curveEaseInOut, animations: {
+            if sender != nil {
+                UIView.animate(withDuration: stepDuration, delay: 0, options: .curveEaseInOut, animations: {
+                    toView.frame.size.height = round(container.bounds.height * scale)
+                    toView.center = CGPoint(x: container.bounds.midX, y: container.bounds.midY)
+                    container.enableBlur()
+                })
+            }
+            UIView.animate(withDuration: stepDuration, delay: duration - stepDuration, options: .curveEaseInOut, animations: {
                 toView.transform = CGAffineTransform.identity
                 toView.layer.cornerRadius = 0
                 toView.frame = container.bounds

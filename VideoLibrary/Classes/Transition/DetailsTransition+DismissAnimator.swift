@@ -13,14 +13,15 @@ extension DetailsTransition {
         
         var isInteractive: Bool = false
         
-        private var scale: CGFloat = 0.9
+        private var scale: CGFloat = 1
         private var finalFrame: CGRect = .zero
         
-        private var sender: VideoCell? = nil
+        private var sender: UIView? = nil
         
-        private let duration: TimeInterval = 0.5
+        private let duration: TimeInterval
         
-        init(_ sender: VideoCell?) {
+        init(_ sender: UIView?) {
+            self.duration = sender != nil ? 0.5 : 0.25
             super.init()
             self.sender = sender
         }
@@ -47,9 +48,12 @@ extension DetailsTransition {
             let toVC = context.viewController(forKey: .to)
             toVC?.beginAppearanceTransition(true, animated: true)
             
-            if let videoView = sender?.videoView, let superview = videoView.superview  {
+            if let videoView = (sender as? VideoCell)?.videoView, let superview = videoView.superview  {
                 scale = videoView.frame.width / fromView.frame.width
                 finalFrame = superview.convert(videoView.frame, to: container)
+            } else if let sender = sender, let superview = sender.superview {
+                scale = sender.frame.width / fromView.frame.width
+                finalFrame = superview.convert(sender.frame, to: container)
             }
             fromView.clipsToBounds = true
         }
@@ -61,7 +65,7 @@ extension DetailsTransition {
             }
             let scale = self.scale
             var finalFrame = self.finalFrame
-            var cornderRadius: CGFloat = 20
+            var cornderRadius: CGFloat = 0
             if let sender = sender {
                 var topInset = UIApplication.shared.statusBarFrame.height
                 if #available(iOS 11.0, *) {
@@ -74,14 +78,17 @@ extension DetailsTransition {
             
             let relStartTime: Double = isInteractive ? 0.01 : 0
             let duration = self.duration * (isInteractive ? 2 : 1)
+            let hasSender = sender != nil
             
             UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeCubic, animations: {
-                UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: 0.5) {
-                    fromView.transform = CGAffineTransform(scaleX: scale, y: scale)
-                    fromView.layer.cornerRadius = cornderRadius
+                if hasSender {
+                    UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: 0.5) {
+                        fromView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                        fromView.layer.cornerRadius = cornderRadius
+                    }
                 }
-                
-                UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
+                let relDuration = hasSender ? 0.5 : 1
+                UIView.addKeyframe(withRelativeStartTime: 1 - relDuration, relativeDuration: relDuration) {
                     context.containerView.disableBlur()
                     if finalFrame != .zero {
                         fromView.frame = finalFrame

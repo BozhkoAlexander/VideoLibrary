@@ -11,9 +11,9 @@ public class DetailsTransition: NSObject, UIViewControllerTransitioningDelegate 
     
     var interactionController: DetailsInteractionController? = nil
     
-    public var sender: VideoCell? = nil
+    public var sender: UIView? = nil
     
-    public init(sender: VideoCell?) {
+    public init(sender: UIView?) {
         super.init()
         self.sender = sender
     }

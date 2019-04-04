@@ -26,7 +26,7 @@ class DetailsViewController: ViewController, VideoViewController, UICollectionVi
     
     // MARK: - Life cycle
     
-    init(_ item: HomeItem, sender: VideoCell?) {
+    init(_ item: HomeItem, sender: UIView?) {
         self.item = item
         super.init(nibName: nil, bundle: nil)
         

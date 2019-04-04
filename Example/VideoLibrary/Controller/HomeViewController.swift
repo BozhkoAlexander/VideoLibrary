@@ -79,7 +79,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     }
     
     @objc func detailsPage() {
-        let vc = StoryViewController()
+        let vc = DetailsViewController(items[0], sender: nil)
         self.present(vc, animated: true)
     }
     
@@ -131,8 +131,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         guard let cell = collectionView.cellForItem(at: indexPath) as? HomeItemElement, let item = cell.item else { return }
         Video.shared.forceVideo = item.video
         
-        let videoCell = cell as? VideoCell
-        let vc = DetailsViewController(item, sender: videoCell)
+        let vc = DetailsViewController(item, sender: cell as? UIView)
         self.present(vc, animated: true)
     }
 
