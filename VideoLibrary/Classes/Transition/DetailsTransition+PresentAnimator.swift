@@ -19,7 +19,7 @@ extension DetailsTransition {
         private let duration: TimeInterval
         
         init(_ sender: UIView?) {
-            self.duration = sender != nil ? 0.5 : 0.25
+            self.duration = sender != nil ? 0.5 : 0.35
             super.init()
             self.sender = sender
         }
@@ -88,16 +88,24 @@ extension DetailsTransition {
                 return
             }
             
-            let stepDuration = sender == nil ? duration : 0.5 * duration
+            let alphaDuration = sender != nil ? 0.1 * duration : 0
+            let moveDuration = sender != nil ? 0.5 * duration : 0
+            let transformDuration = sender != nil ? 0.4 * duration : duration
             let scale = self.scale
-            if sender != nil {
-                UIView.animate(withDuration: stepDuration, delay: 0, options: .curveEaseInOut, animations: {
+            if alphaDuration > 0 {
+                toView.alpha = 0
+                UIView.animate(withDuration: alphaDuration, delay: 0, animations: {
+                    toView.alpha = 1
+                })
+            }
+            if moveDuration > 0 {
+                UIView.animate(withDuration: moveDuration, delay: alphaDuration, options: .curveEaseInOut, animations: {
                     toView.frame.size.height = round(container.bounds.height * scale)
                     toView.center = CGPoint(x: container.bounds.midX, y: container.bounds.midY)
                     container.enableBlur()
                 })
             }
-            UIView.animate(withDuration: stepDuration, delay: duration - stepDuration, options: .curveEaseInOut, animations: {
+            UIView.animate(withDuration: transformDuration, delay: duration - transformDuration, options: .curveEaseInOut, animations: {
                 toView.transform = CGAffineTransform.identity
                 toView.layer.cornerRadius = 0
                 toView.frame = container.bounds

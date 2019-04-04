@@ -72,6 +72,8 @@ public extension Video {
         // MARK: - KVO
         
         private var bufferKVO: NSKeyValueObservation! = nil
+        private var buffer2KVO: NSKeyValueObservation! = nil
+        
         private var statusKVO: NSKeyValueObservation! = nil
         private var timeControlKVO: NSKeyValueObservation! = nil
         
@@ -103,6 +105,9 @@ public extension Video {
                 })
             } else {
                 bufferKVO = item.observe(\.isPlaybackBufferEmpty, options: .initial, changeHandler: { [weak self] (_, _) in
+                    self?.kvoChangeHandler()
+                })
+                buffer2KVO = item.observe(\.isPlaybackLikelyToKeepUp, options: .initial, changeHandler: { [weak self] (_, _) in
                     self?.kvoChangeHandler()
                 })
             }
@@ -156,14 +161,10 @@ public extension Video {
                 @unknown default: return .empty
                 }
             } else {
-                if item.isPlaybackBufferEmpty { // if buffer is empty
-                    return .loading
+                if isPlaying { // if we want to play video
+                    return .playing
                 } else {
-                    if isPlaying { // if we want to play video
-                        return .playing
-                    } else {
-                        return item.currentTime() == CMTime.zero ? .stopped : .paused
-                    }
+                    return item.currentTime() == CMTime.zero ? .stopped : .paused
                 }
             }
 

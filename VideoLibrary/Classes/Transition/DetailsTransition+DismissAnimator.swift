@@ -21,7 +21,7 @@ extension DetailsTransition {
         private let duration: TimeInterval
         
         init(_ sender: UIView?) {
-            self.duration = sender != nil ? 0.5 : 0.25
+            self.duration = sender != nil ? 0.5 : 0.35
             super.init()
             self.sender = sender
         }
@@ -65,7 +65,7 @@ extension DetailsTransition {
             }
             let scale = self.scale
             var finalFrame = self.finalFrame
-            var cornderRadius: CGFloat = 0
+            var cornerRadius: CGFloat = 0
             if let sender = sender {
                 var topInset = UIApplication.shared.statusBarFrame.height
                 if #available(iOS 11.0, *) {
@@ -73,31 +73,72 @@ extension DetailsTransition {
                 }
                 finalFrame.origin.y -= topInset
                 finalFrame.size.height += topInset
-                cornderRadius = sender.layer.cornerRadius
+                cornerRadius = sender.layer.cornerRadius
             }
             
             let relStartTime: Double = isInteractive ? 0.01 : 0
-            let duration = self.duration * (isInteractive ? 2 : 1)
+            let duration = transitionDuration(using: context)
             let hasSender = sender != nil
             
-            UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeCubic, animations: {
-                if hasSender {
-                    UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: 0.5) {
+            if hasSender {
+                if #available(iOS 10.0, *) {
+                    let anim1 = UIViewPropertyAnimator(duration: 0.4 * duration, curve: .easeInOut) {
                         fromView.transform = CGAffineTransform(scaleX: scale, y: scale)
-                        fromView.layer.cornerRadius = cornderRadius
+                        fromView.layer.cornerRadius = cornerRadius
+                    }
+                    let anim2 = UIViewPropertyAnimator(duration: 0.5 * duration, curve: .easeInOut) {
+                        context.containerView.disableBlur()
+                        if finalFrame != .zero {
+                            fromView.frame = finalFrame
+                        } else {
+                            fromView.frame.origin.y = context.containerView.bounds.maxY
+                        }
+                    }
+                    let anim3 = UIViewPropertyAnimator(duration: 0.1, curve: .linear) {
+                        fromView.alpha = 0
+                    }
+                    anim1.addCompletion({ _ in
+                        anim2.startAnimation()
+                    })
+                    anim2.addCompletion({ _ in
+                        anim3.startAnimation()
+                    })
+                    anim3.addCompletion({ _ in
+                        completion?()
+                    })
+                    anim1.startAnimation()
+                } else {
+                    UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeCubic, animations: {
+                        UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: 0.5 - relStartTime) {
+                            fromView.transform = CGAffineTransform(scaleX: scale, y: scale)
+                            fromView.layer.cornerRadius = cornerRadius
+                        }
+                        UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.49) {
+                            context.containerView.disableBlur()
+                            if finalFrame != .zero {
+                                fromView.frame = finalFrame
+                            } else {
+                                fromView.frame.origin.y = context.containerView.bounds.maxY
+                            }
+                        }
+                        UIView.addKeyframe(withRelativeStartTime: 0.99, relativeDuration: 0.01, animations: {
+                            fromView.alpha = 0
+                        })
+                    }) { (_) in
+                        completion?()
                     }
                 }
-                let relDuration = hasSender ? 0.5 : 1
-                UIView.addKeyframe(withRelativeStartTime: 1 - relDuration, relativeDuration: relDuration) {
+            } else {
+                UIView.animate(withDuration: duration, delay: 0, options: .curveEaseInOut, animations: {
                     context.containerView.disableBlur()
                     if finalFrame != .zero {
                         fromView.frame = finalFrame
                     } else {
                         fromView.frame.origin.y = context.containerView.bounds.maxY
                     }
-                }
-            }) { (_) in
-                completion?()
+                }, completion: { (_) in
+                    completion?()
+                })
             }
         }
         
