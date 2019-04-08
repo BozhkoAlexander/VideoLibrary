@@ -39,8 +39,14 @@ public class VideoView: UIImageView {
     
     // MARK: - Properties
     
-    public var hidesWhenStopped = true // hide video layer when video is stopped
-    public var disableAutoplayWhenEnded = true // disable autoplay for the second playing if the video has ended
+    /// hide video layer when video is stopped
+    public var hidesWhenStopped = true
+    
+    /// disable autoplay for the second playing if the video has ended
+    public var disableAutoplayWhenEnded = true
+    
+    /// Shows if an image should be removed animated when the video layer is loaded.
+    public var isImageRemovedWhenVideoLoaded = false
         
     public var videoLink: String? = nil
     public var autoplay: Bool = false
@@ -332,6 +338,19 @@ public class VideoView: UIImageView {
         videoLayer.opacity = opacity
         anim.toValue = opacity
         videoLayer.add(anim, forKey: path)
+        guard isImageRemovedWhenVideoLoaded && opacity > 0 else { return }
+        removeImageAnimated()
+        
+    }
+    
+    /// Remove image animated from the view when the video is loaded.
+    private func removeImageAnimated() {
+        let transition = CATransition()
+        transition.duration = 0.5
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = .fade
+        self.image = nil
+        self.layer.add(transition, forKey: nil)
     }
     
     // MARK: - Update time label
