@@ -129,6 +129,7 @@ public extension Video {
             statusKVO = nil
             timeControlKVO = nil
             bufferKVO = nil
+            buffer2KVO = nil
             
             timer = nil
         }
