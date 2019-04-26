@@ -207,6 +207,7 @@ public class VideoView: UIImageView {
     }
     
     public func setupControlsTimer() {
+        guard videoLink != nil && !videoLink!.isEmpty else { return }
         controlsTimer?.invalidate()
         controlsTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.hideControls), userInfo: nil, repeats: false)
         showControls()
