@@ -9,6 +9,26 @@
 import UIKit
 
 class DetailsInteractionController: UIPercentDrivenInteractiveTransition {
+    
+    private var isCancelled: Bool = false
+    
+    private var isCompleted: Bool = false
+    
+    private var isFinished: Bool {
+        return !isCancelled && !isCompleted
+    }
+    
+    override func cancel() {
+        guard !isFinished else { return }
+        super.cancel()
+        isCancelled = true
+    }
+    
+    override func finish() {
+        guard !isFinished else { return }
+        super.cancel()
+        isCompleted = true
+    }
 
 }
 
@@ -23,7 +43,6 @@ extension UIViewController {
         }
         let height = (UIScreen.main.bounds.height / 2)
         let point = pan.translation(in: nil)
-        let velocity = pan.velocity(in: nil).y
         let progress = min(1, max(0, point.y / height))
         switch pan.state {
         case .changed where transition.interactionController == nil && point.y > 0:
@@ -34,7 +53,7 @@ extension UIViewController {
             } else {
                 transition.interactionController?.update(progress)
             }
-        case .ended where (velocity > 0) || (velocity == 0 && progress > 0.4):
+        case .ended where progress > 0.5:
             finishDismissal(pan)
         case .ended,
              .cancelled: cancelDismissal(pan)
@@ -63,13 +82,11 @@ extension UIViewController {
     
     private func cancelDismissal(_ pan: UIPanGestureRecognizer) {
         transition?.interactionController?.cancel()
-        transition?.interactionController = nil
         (pan.view as? UIScrollView)?.isScrollEnabled = true
     }
     
     private func finishDismissal(_ pan: UIPanGestureRecognizer) {
         transition?.interactionController?.finish()
-        transition?.interactionController = nil
         (pan.view as? UIScrollView)?.isScrollEnabled = true
     }
     
