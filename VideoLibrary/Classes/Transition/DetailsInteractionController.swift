@@ -15,7 +15,7 @@ class DetailsInteractionController: UIPercentDrivenInteractiveTransition {
     private var isCompleted: Bool = false
     
     private var isFinished: Bool {
-        return !isCancelled && !isCompleted
+        return isCancelled || isCompleted
     }
     
     override func cancel() {
@@ -25,8 +25,8 @@ class DetailsInteractionController: UIPercentDrivenInteractiveTransition {
     }
     
     override func finish() {
-        guard !isFinished else { return }
-        super.cancel()
+        guard !isFinished else { return}
+        super.finish()
         isCompleted = true
     }
 
@@ -50,13 +50,20 @@ extension UIViewController {
         case .changed:
             if progress > 0.5 {
                 finishDismissal(pan)
+                pan.isEnabled = false
+                pan.isEnabled = true
             } else {
                 transition.interactionController?.update(progress)
             }
         case .ended where progress > 0.5:
             finishDismissal(pan)
+            pan.isEnabled = false
+            pan.isEnabled = true
         case .ended,
-             .cancelled: cancelDismissal(pan)
+             .cancelled:
+            cancelDismissal(pan)
+            pan.isEnabled = false
+            pan.isEnabled = true
         default: break
         }
     }
@@ -83,11 +90,13 @@ extension UIViewController {
     private func cancelDismissal(_ pan: UIPanGestureRecognizer) {
         transition?.interactionController?.cancel()
         (pan.view as? UIScrollView)?.isScrollEnabled = true
+        transition?.interactionController = nil
     }
     
     private func finishDismissal(_ pan: UIPanGestureRecognizer) {
         transition?.interactionController?.finish()
         (pan.view as? UIScrollView)?.isScrollEnabled = true
+        transition?.interactionController = nil
     }
     
 }

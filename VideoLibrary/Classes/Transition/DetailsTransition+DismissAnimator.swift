@@ -81,12 +81,12 @@ extension DetailsTransition {
             let hasSender = sender != nil
             
             if hasSender {
-                if #available(iOS 10.0, *) {
-                    let anim1 = UIViewPropertyAnimator(duration: 0.4 * duration, curve: .easeInOut) {
+                UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeLinear, animations: {
+                    UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: 0.5 - relStartTime) {
                         fromView.transform = CGAffineTransform(scaleX: scale, y: scale)
                         fromView.layer.cornerRadius = cornerRadius
                     }
-                    let anim2 = UIViewPropertyAnimator(duration: 0.5 * duration, curve: .easeInOut) {
+                    UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.49) {
                         context.containerView.disableBlur()
                         if finalFrame != .zero {
                             fromView.frame = finalFrame
@@ -94,39 +94,11 @@ extension DetailsTransition {
                             fromView.frame.origin.y = context.containerView.bounds.maxY
                         }
                     }
-                    let anim3 = UIViewPropertyAnimator(duration: 0.1, curve: .linear) {
+                    UIView.addKeyframe(withRelativeStartTime: 0.99, relativeDuration: 0.01, animations: {
                         fromView.alpha = 0
-                    }
-                    anim1.addCompletion({ _ in
-                        anim2.startAnimation()
                     })
-                    anim2.addCompletion({ _ in
-                        anim3.startAnimation()
-                    })
-                    anim3.addCompletion({ _ in
-                        completion?()
-                    })
-                    anim1.startAnimation()
-                } else {
-                    UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeCubic, animations: {
-                        UIView.addKeyframe(withRelativeStartTime: relStartTime, relativeDuration: 0.5 - relStartTime) {
-                            fromView.transform = CGAffineTransform(scaleX: scale, y: scale)
-                            fromView.layer.cornerRadius = cornerRadius
-                        }
-                        UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.49) {
-                            context.containerView.disableBlur()
-                            if finalFrame != .zero {
-                                fromView.frame = finalFrame
-                            } else {
-                                fromView.frame.origin.y = context.containerView.bounds.maxY
-                            }
-                        }
-                        UIView.addKeyframe(withRelativeStartTime: 0.99, relativeDuration: 0.01, animations: {
-                            fromView.alpha = 0
-                        })
-                    }) { (_) in
-                        completion?()
-                    }
+                }) { (_) in
+                    completion?()
                 }
             } else {
                 UIView.animate(withDuration: duration, delay: 0, options: .curveEaseInOut, animations: {
