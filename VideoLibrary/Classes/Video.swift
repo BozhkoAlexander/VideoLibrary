@@ -174,7 +174,11 @@ public class Video: NSObject {
     public func sync(for viewController: UIViewController?) {
         // calculate current video
         var result: (delta: CGFloat, cell: VideoElement)? = nil
-        let isPresented = viewController == UIViewController.presented()
+        let presentedVC = UIViewController.presented()
+        var isPresented = viewController == presentedVC
+        if !isPresented, let vc = presentedVC {
+            isPresented = !vc.children.filter({ $0 == viewController }).isEmpty
+        }
         var visibleVideos = Array<VideoCell>()
         
         if let element = (viewController as? VideoViewController)?.videoController.videoView, isPresented { // if there is no scroll view, just simple video element in the view
