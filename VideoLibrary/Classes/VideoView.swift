@@ -196,6 +196,10 @@ public class VideoView: UIImageView {
     }
     
     public func setupPauseTimer() {
+        guard videoLink != nil && !videoLink!.isEmpty else {
+            stopPauseTimer()
+            return
+        }
         pauseTimer?.invalidate()
         pauseTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.hidePause), userInfo: nil, repeats: false)
         showPause()
@@ -207,7 +211,10 @@ public class VideoView: UIImageView {
     }
     
     public func setupControlsTimer() {
-        guard videoLink != nil && !videoLink!.isEmpty else { return }
+        guard videoLink != nil && !videoLink!.isEmpty else {
+            stopControlsTimer()
+            return
+        }
         controlsTimer?.invalidate()
         controlsTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.hideControls), userInfo: nil, repeats: false)
         showControls()
