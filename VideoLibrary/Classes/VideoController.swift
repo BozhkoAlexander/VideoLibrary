@@ -19,7 +19,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     public var videoView: VideoElement? = nil // if the view controller has no scroll view, there is possibility to have one video view on the page
     
-    weak var scrollView: UIScrollView? = nil
+    public weak var scrollView: UIScrollView? = nil
     
     weak var viewController: UIViewController? = nil
     
