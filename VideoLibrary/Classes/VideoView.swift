@@ -57,6 +57,8 @@ public class VideoView: UIImageView {
     /// Contains an error occurrs in loading process
     public var error: Error? = nil
     
+    public var status: Video.Status = .empty
+    
     /// Background color of the video layer (visible only when video is playing or paused.
     public var videoLayerBackgroundColor: UIColor? {
         get {
@@ -221,6 +223,7 @@ public class VideoView: UIImageView {
     }
     
     @objc public func hideControls() {
+        guard status != .paused else { return }
         UIView.animate(withDuration: 0.5) { [weak self] in
             self?.volumeButton.layer.opacity = 0
             self?.timeLabel.layer.opacity = 0
@@ -233,6 +236,7 @@ public class VideoView: UIImageView {
     }
     
     @objc public func hidePause() {
+        guard status != .paused else { return }
         UIView.animate(withDuration: 0.5) { [weak self] in
             self?.playButton.alpha = 0
         }
@@ -274,6 +278,7 @@ public class VideoView: UIImageView {
         if videoLink == nil || videoLink!.isEmpty {
             status = .empty
         }
+        self.status = status
         switch status {
         case .empty:
             setVideoOpacity(0)
