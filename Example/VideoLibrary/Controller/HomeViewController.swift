@@ -128,11 +128,15 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         videoController.collectionView(collectionView, didSelectItemAt: indexPath)
-        guard let cell = collectionView.cellForItem(at: indexPath) as? HomeItemElement, let item = cell.item else { return }
-        Video.shared.forceVideo = item.video
         
-        let vc = DetailsViewController(item, sender: cell as? UIView)
-        self.present(vc, animated: true)
+        guard let cell = collectionView.cellForItem(at: indexPath) as? VideoCell else { return }
+        cell.videoView.setupPauseTimer()
+        
+//        guard let cell = collectionView.cellForItem(at: indexPath) as? HomeItemElement, let item = cell.item else { return }
+//        Video.shared.forceVideo = item.video
+//
+//        let vc = DetailsViewController(item, sender: cell as? UIView)
+//        self.present(vc, animated: true)
     }
 
 }

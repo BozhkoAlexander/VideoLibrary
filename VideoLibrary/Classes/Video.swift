@@ -139,6 +139,7 @@ public class Video: NSObject {
         }
         if let cell = cell {
             // video did end displaying
+            guard cell.videoView.status != .paused else { return }
             cell.videoView.update(status: .stopped, container: nil)
             cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
         } else if let element = controller?.element(for: link) {
@@ -239,12 +240,18 @@ public class Video: NSObject {
         // stop all videos except current
         visibleVideos.forEach({ cell in
             guard result == nil || cell.videoView != result?.cell.videoView else { return }
+            guard cell.videoView.status != .paused else { return }
+            if let link = cell.videoView.videoLink, let container = Cache.videos.object(forKey: link as NSString) {
+                container.stop()
+            }
             cell.videoView.update(status: .stopped, container: nil)
             cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
         })
         loadedKeys.forEach { (link) in
             guard link != forceVideo, let container = Cache.videos.object(forKey: link as NSString), container != current else { return }
-            container.stop()
+            if container.isPlaying {
+                container.stop()
+            }
         }
         // play or load
         guard let cell = result?.cell, let delta = result?.delta else { return }
