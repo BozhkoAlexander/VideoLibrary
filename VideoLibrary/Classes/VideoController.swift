@@ -87,8 +87,9 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     @objc func itemPlayPressed(_ notification: Notification) {
         guard let videoView = notification.object as? VideoView else { return }
-        guard self.element(for: videoView.videoLink) != nil else { return }
+        guard let element = self.element(for: videoView.videoLink) else { return }
         Video.shared.sync(for: viewController)
+        Video.shared.play(element)
     }
     
     @objc func itemPausePressed(_ notification: Notification) {
