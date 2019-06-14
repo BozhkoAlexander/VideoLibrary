@@ -290,6 +290,11 @@ public class VideoView: UIImageView {
             playButton.layer.opacity = 0
             // remove video because it's failed to load
             self.videoLink = nil
+            
+            videoLayer.removeAllAnimations()
+            volumeButton.layer.removeAllAnimations()
+            timeLabel.layer.removeAllAnimations()
+            playButton.layer.removeAllAnimations()
         case .loading:
             let isPlaying = container != nil
             setVideoOpacity(isPlaying ? 1 : 0)
