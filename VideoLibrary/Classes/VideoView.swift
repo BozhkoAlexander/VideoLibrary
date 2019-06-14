@@ -252,8 +252,12 @@ public class VideoView: UIImageView {
     public func setVideo(_ link: String?, autoplay: Bool = true) {
         stopControlsTimer()
         if link != videoLink {
-            stopObservers()
-            videoLayer.player = nil
+            hideControls()
+            if let link = link, let container = Cache.videos.object(forKey: link as NSString) {
+                setContainer(container)
+            } else {
+                setContainer(nil)
+            }
         }
         self.videoLink = link
         self.autoplay = autoplay

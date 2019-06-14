@@ -61,8 +61,7 @@ class HomeItemCell: UICollectionViewCell, HomeItemElement, VideoElement {
             if let info = videoView.error?.localizedDescription {
                 print("INFO: \(info)")
             }
-        case .ended,
-             .paused:
+        case .ended:
             self.item?.autoplay = false
             self.videoView.autoplay = false
         default: break
