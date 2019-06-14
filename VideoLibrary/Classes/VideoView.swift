@@ -289,7 +289,7 @@ public class VideoView: UIImageView {
             timeLabel.layer.opacity = 0
             playButton.layer.opacity = 0
             // remove video because it's failed to load
-            self.setVideo(nil, autoplay: false)
+            self.videoLink = nil
         case .loading:
             let isPlaying = container != nil
             setVideoOpacity(isPlaying ? 1 : 0)
@@ -336,7 +336,7 @@ public class VideoView: UIImageView {
             playButton.layer.opacity = 1
             // disable autoplay
             if disableAutoplayWhenEnded {
-                self.setVideo(videoLink, autoplay: false)
+                self.autoplay = false
             }
         }
     }
