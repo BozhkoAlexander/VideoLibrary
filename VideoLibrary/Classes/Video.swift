@@ -326,6 +326,13 @@ public class Video: NSObject {
         })
     }
     
+    /** Stops video by link, doesn't affect any other videos. */
+    public func stop(_ link: String?) {
+        guard let link = link, let container = Cache.videos.object(forKey: link as NSString) else { return }
+        container.stop()
+        NotificationCenter.default.post(name: .VideoStop, object: link)
+    }
+    
 }
 
 private extension AVKeyValueStatus {
