@@ -251,21 +251,19 @@ public class VideoView: UIImageView {
     
     public func setVideo(_ link: String?, autoplay: Bool = true) {
         stopControlsTimer()
-        if link != videoLink {
-            hideControls()
-            if let link = link, let container = Cache.videos.object(forKey: link as NSString) {
-                setContainer(container)
-            } else {
-                setContainer(nil)
-            }
-        }
         self.videoLink = link
         self.autoplay = autoplay
         
-        videoLayer.opacity = 0
-        playButton.isSelected = false
-        let hasVideo = link != nil && URL(string: link!) != nil
-        playButton.layer.opacity = hasVideo ? 1 : 0
+        if let link = link, let container = Cache.videos.object(forKey: link as NSString) {
+            setContainer(container)
+            let status = container.bufferingStatus() ?? .stopped
+            update(status: status, container: container)
+        } else {
+            setContainer(nil)
+            let hasVideo = link != nil && URL(string: link!) != nil
+            let status: Video.Status = hasVideo ? .stopped : .empty
+            update(status: status, container: nil)
+        }
     }
     
     /** Link video container with view */
