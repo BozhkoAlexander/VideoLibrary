@@ -152,7 +152,12 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     /** Call in collectionView didEndDisplaying */
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let cell = cell as? VideoCell, let link = cell.videoView?.videoLink {
-            Video.shared.pause(link, cell: cell, for: self)
+            // if the video was not paused by user then we have to stop it, otherwise we have to pause it.
+            if cell.videoView.status == .playing {
+                Video.shared.stop()
+            } else {
+                Video.shared.pause(link, cell: cell, for: self)
+            }
         }
     }
     
