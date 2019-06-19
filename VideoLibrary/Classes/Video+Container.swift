@@ -115,14 +115,18 @@ public extension Video {
             timer = player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: .main) { [weak self] (time) in
                 guard let this = self else { return }
                 guard time != CMTime.zero else { return }
-                let remain = this.item.duration.seconds - time.seconds
-                guard !remain.isNaN && !remain.isZero else { return }
-                let minutes = Int(remain) / 60
-                let seconds = Int(remain) % 60
-                let string = String(format: "%02i:%02i", minutes, seconds)
-                let info: TimerInfo = (this, string)
-                NotificationCenter.default.post(name: .VideoTimer, object: info)
+                this.postTimeNotification(for: time)
             }
+        }
+        
+        private func postTimeNotification(for time: CMTime) {
+            let remain = item.duration.seconds - time.seconds
+            guard !remain.isNaN && !remain.isZero else { return }
+            let minutes = Int(remain) / 60
+            let seconds = Int(remain) % 60
+            let string = String(format: "%02i:%02i", minutes, seconds)
+            let info: TimerInfo = (self, string)
+            NotificationCenter.default.post(name: .VideoTimer, object: info)
         }
         
         private func removeObservers() {
@@ -139,6 +143,8 @@ public extension Video {
         public func play() {
             isPlaying = true
             self.player.play()
+            let time = self.player.currentTime()
+            postTimeNotification(for: time)
         }
         
         public func stop() {
