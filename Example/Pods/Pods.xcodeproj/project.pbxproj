@@ -28,6 +28,9 @@
 		FA6D88CF21413B92002A4A1E /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6D88CE21413B92002A4A1E /* UIViewController.swift */; };
 		FA74E88F222D20EF002B0F60 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA74E88E222D20EF002B0F60 /* Error.swift */; };
 		FA7B743B213FC3A00011E1D5 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7B743A213FC3A00011E1D5 /* UIView.swift */; };
+		FA8494EF22C4D24400585C33 /* BetaVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8494EE22C4D24400585C33 /* BetaVideoView.swift */; };
+		FA8494F122C4D2A700585C33 /* VideoView+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8494F022C4D2A700585C33 /* VideoView+State.swift */; };
+		FA8494F422C4D53300585C33 /* VideoViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8494F322C4D53300585C33 /* VideoViewDelegate.swift */; };
 		FAAF65E421957313002422A5 /* DetailsTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAF65E321957313002422A5 /* DetailsTransition.swift */; };
 		FAAF65E6219574EA002422A5 /* DetailsTransition+PresentAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAF65E5219574EA002422A5 /* DetailsTransition+PresentAnimator.swift */; };
 		FABFA13A219ABB760043AE5D /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = FABFA139219ABB760043AE5D /* UIDevice.swift */; };
@@ -97,6 +100,9 @@
 		FA6D88CE21413B92002A4A1E /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		FA74E88E222D20EF002B0F60 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		FA7B743A213FC3A00011E1D5 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
+		FA8494EE22C4D24400585C33 /* BetaVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetaVideoView.swift; sourceTree = "<group>"; };
+		FA8494F022C4D2A700585C33 /* VideoView+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VideoView+State.swift"; sourceTree = "<group>"; };
+		FA8494F322C4D53300585C33 /* VideoViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewDelegate.swift; sourceTree = "<group>"; };
 		FAAF65E321957313002422A5 /* DetailsTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsTransition.swift; sourceTree = "<group>"; };
 		FAAF65E5219574EA002422A5 /* DetailsTransition+PresentAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DetailsTransition+PresentAnimator.swift"; sourceTree = "<group>"; };
 		FABFA139219ABB760043AE5D /* UIDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
@@ -266,6 +272,7 @@
 				FA61AC732136A23D00DE7312 /* Video+Container.swift */,
 				FA61AC702136A23D00DE7312 /* VideoView.swift */,
 				FA61AC742136A23D00DE7312 /* VideoController.swift */,
+				FA8494F222C4D41E00585C33 /* VideoView */,
 			);
 			name = Classes;
 			path = VideoLibrary/Classes;
@@ -292,6 +299,16 @@
 				FA74E88E222D20EF002B0F60 /* Error.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		FA8494F222C4D41E00585C33 /* VideoView */ = {
+			isa = PBXGroup;
+			children = (
+				FA8494EE22C4D24400585C33 /* BetaVideoView.swift */,
+				FA8494F022C4D2A700585C33 /* VideoView+State.swift */,
+				FA8494F322C4D53300585C33 /* VideoViewDelegate.swift */,
+			);
+			path = VideoView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -469,10 +486,13 @@
 				FA7B743B213FC3A00011E1D5 /* UIView.swift in Sources */,
 				FA61AC7E2136A23E00DE7312 /* VideoController.swift in Sources */,
 				FA2E2C1D21996C5600A5D57A /* DetailsTransition+DismissAnimator.swift in Sources */,
+				FA8494F422C4D53300585C33 /* VideoViewDelegate.swift in Sources */,
 				FA61AC7B2136A23E00DE7312 /* VideoView.swift in Sources */,
 				FAAF65E6219574EA002422A5 /* DetailsTransition+PresentAnimator.swift in Sources */,
 				FAAF65E421957313002422A5 /* DetailsTransition.swift in Sources */,
+				FA8494EF22C4D24400585C33 /* BetaVideoView.swift in Sources */,
 				FA61AC792136A23E00DE7312 /* DetailsInteractionController.swift in Sources */,
+				FA8494F122C4D2A700585C33 /* VideoView+State.swift in Sources */,
 				FA74E88F222D20EF002B0F60 /* Error.swift in Sources */,
 				FA61AC802136A23E00DE7312 /* Video.swift in Sources */,
 			);

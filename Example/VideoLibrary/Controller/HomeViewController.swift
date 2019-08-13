@@ -106,8 +106,7 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
         if indexPath.item % 2 == 0 {
             return CGSize(width: width, height: 64)
         }
-        let height = ceil(9/16 * width)
-        return CGSize(width: width, height: height)
+        return CGSize(width: width, height: width)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

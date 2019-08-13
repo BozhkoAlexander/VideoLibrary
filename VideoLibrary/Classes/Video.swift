@@ -206,8 +206,10 @@ public class Video: NSObject {
             // if there is no force link (usual way)
             if result == nil && isPresented {
                 let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoElement)? in
-                    guard let videoFrame = cell.videoView?.frame, cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
-                    let midY = cell.convert(videoFrame, to: scrollView).midY
+                    guard cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
+                    let videoFrame = cell.frame
+                    guard videoFrame.minY >= visibleFrame.minY && videoFrame.maxY <= visibleFrame.maxY else { return nil }
+                    let midY = videoFrame.midY
                     var delta = abs(center - midY)
                     if cell.frame.minY < cell.bounds.midY || // for the first element
                         (scrollView.contentSize.height - cell.frame.maxY) < cell.bounds.midY { // for the last element

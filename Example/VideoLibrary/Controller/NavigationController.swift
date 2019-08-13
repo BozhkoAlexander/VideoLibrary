@@ -44,4 +44,8 @@ extension NavigationController {
         return NavigationController(rootViewController: HomeViewController())
     }
     
+    open class var newVideoView: NavigationController {
+        return NavigationController(rootViewController: TestViewController())
+    }
+    
 }

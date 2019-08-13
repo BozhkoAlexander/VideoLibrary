@@ -52,6 +52,16 @@
                ReferencedContainer = "container:VideoLibrary.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FA8494E122C4CE7100585C33"
+               BuildableName = "VideoLibrary_UITests.xctest"
+               BlueprintName = "VideoLibrary_UITests"
+               ReferencedContainer = "container:VideoLibrary.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

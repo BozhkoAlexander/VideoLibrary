@@ -93,7 +93,9 @@ class HomeItemCell: UICollectionViewCell, HomeItemElement, VideoElement {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        videoView.frame = contentView.bounds
+        videoView.frame.origin = .zero
+        videoView.frame.size.width = contentView.bounds.width
+        videoView.frame.size.height = round(9/16 * videoView.frame.width)
     }
     
 }
