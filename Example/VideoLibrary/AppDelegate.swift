@@ -21,7 +21,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func restart() {
         guard let window = window else { return }
         UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromLeft, animations: {
-            window.rootViewController = NavigationController.home
+            let tc = UITabBarController()
+            let controllers = [
+                NavigationController.home,
+                NavigationController.newVideoView
+            ]
+            tc.setViewControllers(controllers, animated: false)
+            window.rootViewController = tc
         }, completion: nil)
     }
     
@@ -30,7 +36,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = NavigationController.home
+        let tc = UITabBarController()
+        let controllers = [
+            NavigationController.home,
+            NavigationController.newVideoView
+        ]
+        tc.setViewControllers(controllers, animated: false)
+        window?.rootViewController = tc
+        
         window?.makeKeyAndVisible()
         
         return true
