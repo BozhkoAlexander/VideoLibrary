@@ -67,6 +67,7 @@ open class BetaVideoView: UIImageView {
                     case .paused: print("DEBUG paused")
                     case .playing: print("DEBUG playing")
                     case .waitingToPlayAtSpecifiedRate: print("DEBUG waitingToPlayAtSpecifiedRate")
+                    @unknown default: break
                     }
                 })
             } else {
