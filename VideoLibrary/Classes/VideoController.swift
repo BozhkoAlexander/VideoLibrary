@@ -115,10 +115,11 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     }
     
     @objc func fullscreenVideo(_ notification: Notification) {
+        guard let vc = viewController, vc.presentedViewController == nil else { return }
         guard let view = notification.object as? VideoView, let player = view.videoLayer.player else { return }
-        let vc = AVPlayerViewController()
-        vc.player = player
-        viewController?.present(vc, animated: true)
+        let playerVC = AVPlayerViewController()
+        playerVC.player = player
+        vc.present(playerVC, animated: true)
     }
     
     // MARK: - Gesture reocgnizer delegate
