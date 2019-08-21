@@ -35,6 +35,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemPausePressed(_:)), name: .VideoPausePressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemStop(_:)), name: .VideoStop, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.syncVideo), name: .VideoResync, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.fullscreenVideo(_:)), name: .VideoFullscreenPressed, object: nil)
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -49,6 +50,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         NotificationCenter.default.removeObserver(self, name: .VideoPausePressed, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoStop, object: nil)
         NotificationCenter.default.removeObserver(self, name: .VideoResync, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .VideoFullscreenPressed, object: nil)
     }
     
     // MARK: Public methods
@@ -110,6 +112,13 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     @objc func syncVideo() {
         Video.shared.sync(for: viewController)
+    }
+    
+    @objc func fullscreenVideo(_ notification: Notification) {
+        guard let view = notification.object as? VideoView, let player = view.videoLayer.player else { return }
+        let vc = AVPlayerViewController()
+        vc.player = player
+        viewController?.present(vc, animated: true)
     }
     
     // MARK: - Gesture reocgnizer delegate

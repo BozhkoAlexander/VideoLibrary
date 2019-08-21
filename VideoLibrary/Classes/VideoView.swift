@@ -90,6 +90,7 @@ public class VideoView: UIImageView {
     public weak var videoLayer: AVPlayerLayer! = nil
     public weak var loader: UIActivityIndicatorView! = nil
     public weak var volumeButton: UIButton! = nil
+    public weak var fullscreenButton: UIButton! = nil
     public weak var timeLabel: UILabel! = nil
     public weak var playButton: UIButton! = nil
     
@@ -120,8 +121,23 @@ public class VideoView: UIImageView {
         
         button.addTarget(self, action: #selector(self.volumePressed(_:)), for: .touchUpInside)
         
+        button.isHidden = true
+        
         self.addSubview(button)
         self.volumeButton = button
+    }
+    
+    private func setupFullscreenButton() {
+        let button = UIButton(type: .custom)
+        let bundle = Bundle(for: self.classForCoder)
+        let image = UIImage(named: "FullscreenIcon", in: bundle, compatibleWith: nil)
+        button.setImage(image, for: .normal)
+        button.layer.opacity = 0
+        
+        button.addTarget(self, action: #selector(fullscreenPressed(_:)), for: .touchUpInside)
+        
+        addSubview(button)
+        fullscreenButton = button
     }
     
     private func setupTimeLabel() {
@@ -161,6 +177,7 @@ public class VideoView: UIImageView {
         setupVideoLayer()
         setupLoader()
         setupVolumeButton()
+        setupFullscreenButton()
         setupTimeLabel()
         setupPlayButton()
         
@@ -226,12 +243,14 @@ public class VideoView: UIImageView {
         guard status != .paused else { return }
         UIView.animate(withDuration: 0.5) { [weak self] in
             self?.volumeButton.layer.opacity = 0
+            self?.fullscreenButton.layer.opacity = 0
             self?.timeLabel.layer.opacity = 0
         }
     }
     
     public func showControls() {
         volumeButton.layer.opacity = 1
+        fullscreenButton.layer.opacity = 1
         timeLabel.layer.opacity = 1
     }
     
@@ -286,6 +305,7 @@ public class VideoView: UIImageView {
             setVideoOpacity(0)
             loader.stopAnimating()
             volumeButton.layer.opacity = 0
+            fullscreenButton.layer.opacity = 0
             timeLabel.layer.opacity = 0
             playButton.layer.opacity = 0
             // remove video because it's failed to load
@@ -293,6 +313,7 @@ public class VideoView: UIImageView {
             
             videoLayer.removeAllAnimations()
             volumeButton.layer.removeAllAnimations()
+            fullscreenButton.layer.removeAllAnimations()
             timeLabel.layer.removeAllAnimations()
             playButton.layer.removeAllAnimations()
         case .loading:
@@ -300,12 +321,14 @@ public class VideoView: UIImageView {
             setVideoOpacity(isPlaying ? 1 : 0)
             loader.startAnimating()
             volumeButton.layer.opacity = 0
+            fullscreenButton.layer.opacity = 0
             timeLabel.layer.opacity = 0
             playButton.layer.opacity = 0
         case .playing:
             setVideoOpacity(1)
             loader.stopAnimating()
             volumeButton.layer.opacity = 1
+            fullscreenButton.layer.opacity = 1
             volumeButton.isSelected = Video.shared.isMuted
             timeLabel.layer.opacity = 1
             playButton.layer.opacity = 0
@@ -321,6 +344,7 @@ public class VideoView: UIImageView {
             }
             loader.stopAnimating()
             volumeButton.layer.opacity = 0
+            fullscreenButton.layer.opacity = 0
             timeLabel.layer.opacity = 0
             let hasVideo = videoLink != nil && URL(string: videoLink!) != nil
             playButton.layer.opacity = hasVideo ? 1 : 0
@@ -336,6 +360,7 @@ public class VideoView: UIImageView {
             setVideoOpacity(0)
             loader.stopAnimating()
             volumeButton.layer.opacity = 0
+            fullscreenButton.layer.opacity = 0
             timeLabel.layer.opacity = 0
             playButton.isSelected = false
             playButton.layer.opacity = 1
@@ -400,6 +425,7 @@ public class VideoView: UIImageView {
         volumeButton.frame.size = size
         volumeButton.frame.origin.x = bounds.width - size.width
         volumeButton.frame.origin.y = bounds.height - size.height
+        fullscreenButton.frame = volumeButton.frame
         
         if let timeText = timeLabel.text, !timeText.isEmpty {
             timeLabel.frame.size.width = ceil(timeText.boundingRect(with: .zero, font: timeLabel.font).width) + offset
@@ -421,6 +447,10 @@ public class VideoView: UIImageView {
     @objc func volumePressed(_ sender: UIButton) {
         setupControlsTimer()
         Video.shared.isMuted = !sender.isSelected
+    }
+    
+    @objc func fullscreenPressed(_ sender: UIButton) {
+        NotificationCenter.default.post(name: .VideoFullscreenPressed, object: self)
     }
     
     @objc func playPressed(_ sender: UIButton) {

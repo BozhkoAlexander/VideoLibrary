@@ -17,6 +17,7 @@ public extension Notification.Name {
     static let VideoPausePressed = Notification.Name("videoview-pause")
     static let VideoStop = Notification.Name("videoview-stop")
     static let VideoResync = Notification.Name("videoview-resync")
+    static let VideoFullscreenPressed = Notification.Name("videoview-fullscreen")
     
 }
 
