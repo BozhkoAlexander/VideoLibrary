@@ -208,7 +208,10 @@ public class Video: NSObject {
                 let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoElement)? in
                     guard cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
                     let videoFrame = cell.frame
-                    guard videoFrame.minY >= visibleFrame.minY && videoFrame.maxY <= visibleFrame.maxY else { return nil }
+                    // Check if the whole cell is on the screen, if needed
+                    if let controller = (viewController as? VideoViewController)?.videoController, controller.autoplayWhenWholeCellOnScreen {
+                        guard videoFrame.minY >= visibleFrame.minY && videoFrame.maxY <= visibleFrame.maxY else { return nil }
+                    }
                     let midY = videoFrame.midY
                     var delta = abs(center - midY)
                     if cell.frame.minY < cell.bounds.midY || // for the first element

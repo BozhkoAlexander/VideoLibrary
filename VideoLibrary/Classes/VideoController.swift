@@ -23,6 +23,9 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     weak var viewController: UIViewController? = nil
     
+    /// Shows if whole video cell should be on the screen to autoplay. For example, in the media cell we have to set this flag to FALSE, because this is rear content page.
+    public var autoplayWhenWholeCellOnScreen = true
+    
     // MARK: - Life cycle
     
     public override init() {
