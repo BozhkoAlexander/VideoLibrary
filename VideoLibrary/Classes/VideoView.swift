@@ -47,6 +47,9 @@ public class VideoView: UIImageView {
     
     /// Shows if an image should be removed animated when the video layer is loaded.
     public var isImageRemovedWhenVideoLoaded = false
+    
+    /// Automatically open fullscreen video when the fullscreen button is pressed. If false then just posts `VideoFullscreenPressed` notification.
+    public var automaticallyOpenFullscreen = false
         
     public var videoLink: String? = nil
     public var autoplay: Bool = false
