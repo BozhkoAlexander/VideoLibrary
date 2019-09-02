@@ -265,6 +265,17 @@ public class Video: NSObject {
     }
     
     public func play(_ cell: VideoElement, delta: CGFloat = 0, for viewController: UIViewController? = nil, container: Container? = nil) {
+        if let cell = cell as? VideoCell, let scrollView = cell.superview as? UIScrollView {
+            // Stop all other videos (in case if some of them are paused or played.
+            scrollView.visibleVideoCells.forEach({
+                guard $0 as UIView != cell as UIView else { return }
+                if let link = $0.videoView.videoLink, let container = Cache.videos.object(forKey: link as NSString) {
+                    container.stop()
+                }
+                $0.videoView.update(status: .stopped, container: nil)
+                $0.video($0, didChangeStatus: .stopped, withContainer: nil)
+            })
+        }
         if let container = container {
             if cell.videoView.autoplay || cell.videoView.videoLink == forceVideo {
                 container.play()
