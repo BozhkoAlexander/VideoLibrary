@@ -49,6 +49,7 @@ class HomeItemCell: UICollectionViewCell, HomeItemElement, VideoElement {
         let view = VideoView()
         view.backgroundColor = .lightGray
         view.contentMode = .scaleAspectFill
+        view.automaticallyOpenFullscreen = true
         
         contentView.addSubview(view)
         videoView = view
