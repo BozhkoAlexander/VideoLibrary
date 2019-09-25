@@ -28,13 +28,9 @@ public class Video: NSObject {
         }
     }
     
-    deinit {
-        stopObservers()
-    }
-    
     // MARK: - Properties
     
-    private let audio = AVAudioSession.sharedInstance()
+    private var audio: AVAudioSession { return AVAudioSession.sharedInstance() }
     
     public var isMuted: Bool = true
     {
@@ -50,12 +46,13 @@ public class Video: NSObject {
     
     // MARK: - KVO
     
-    private func startObservers() {
-        audio.addObserver(self, forKeyPath: #keyPath(AVAudioSession.outputVolume), options: .new, context: nil)
-    }
+    private var volumeKVO: NSKeyValueObservation! = nil
     
-    private func stopObservers() {
-        audio.removeObserver(self, forKeyPath: #keyPath(AVAudioSession.outputVolume))
+    private func startObservers() {
+        volumeKVO = audio.observe(\.outputVolume, options: [.old], changeHandler: { [weak self] (session, change) in
+            guard let this = self else { return }
+            this.isMuted = session.outputVolume == 0
+        })
     }
     
     override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
