@@ -175,7 +175,9 @@ public class Video: NSObject {
         let presentedVC = UIViewController.presented()
         var isPresented = viewController == presentedVC
         if !isPresented, let vc = presentedVC {
-            isPresented = !vc.children.filter({ $0 == viewController }).isEmpty
+            let presentedIsParentOfVideoController = !vc.children.filter({ $0 == viewController }).isEmpty
+            let presentedIsChildOfVideoController = viewController != nil && !viewController!.children.filter({ $0 == vc }).isEmpty
+            isPresented = presentedIsChildOfVideoController || presentedIsParentOfVideoController
         }
         var visibleVideos = Array<VideoCell>()
         
