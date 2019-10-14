@@ -18,6 +18,8 @@ extension UIViewController {
                 return navigationController.viewControllers.last ?? navigationController
             } else if let tabController = vc as? UITabBarController, let selectedVC = tabController.selectedViewController {
                 return presented(selectedVC)
+            } else if let vc = vc, vc.children.count == 1 {
+                return presented(vc.children.first)
             }
             return vc
         }
