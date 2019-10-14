@@ -174,10 +174,8 @@ public class Video: NSObject {
         var result: (delta: CGFloat, cell: VideoElement)? = nil
         let presentedVC = UIViewController.presented()
         var isPresented = viewController == presentedVC
-        if !isPresented, let vc = presentedVC {
-            let presentedIsParentOfVideoController = !vc.children.filter({ $0 == viewController }).isEmpty
-            let presentedIsChildOfVideoController = viewController != nil && !viewController!.children.filter({ $0 == vc }).isEmpty
-            isPresented = presentedIsChildOfVideoController || presentedIsParentOfVideoController
+        if !isPresented, let vc = presentedVC, let viewController = viewController {
+            isPresented = vc.children.contains(viewController)
         }
         var visibleVideos = Array<VideoCell>()
         

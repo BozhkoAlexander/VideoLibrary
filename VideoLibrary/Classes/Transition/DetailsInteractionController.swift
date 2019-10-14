@@ -83,7 +83,13 @@ extension UIViewController {
         (pan.view as? UIScrollView)?.isScrollEnabled = false
         dismiss(animated: true) {
             let vc = UIViewController.presented()
-            Video.shared.sync(for: vc)
+            if vc is VideoViewController {
+                Video.shared.sync(for: vc)
+            } else {
+                vc?.children.forEach({
+                    Video.shared.sync(for: $0)
+                })
+            }
         }
     }
     
