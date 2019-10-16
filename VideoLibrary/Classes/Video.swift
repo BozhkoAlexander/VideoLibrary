@@ -258,6 +258,9 @@ public class Video: NSObject {
         // play or load
         guard let cell = result?.cell, let delta = result?.delta else { return }
         guard cell.videoView.status != .paused else { return }
+        if let videoVC = viewController as? VideoViewController {
+            guard videoVC.shouldPlayVideo(cell) else { return }
+        }
         self.play(cell, delta: delta, for: viewController, container: current)
     }
     

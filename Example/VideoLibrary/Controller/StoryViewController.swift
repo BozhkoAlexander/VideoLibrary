@@ -13,6 +13,10 @@ class StoryViewController: ViewController, VideoViewController {
     
     var videoController = VideoController()
     
+    func shouldPlayVideo(_ element: VideoElement) -> Bool {
+        return true
+    }
+    
     var storyView: StoryView! { return view as? StoryView }
 
     override func loadView() {

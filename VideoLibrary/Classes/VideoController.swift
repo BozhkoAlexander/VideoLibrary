@@ -10,7 +10,11 @@ import UIKit
 import AVKit
 
 public protocol VideoViewController {
+    
     var videoController: VideoController { get set }
+    
+    func shouldPlayVideo(_ element: VideoElement) -> Bool
+    
 }
 
 public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDelegate, UIGestureRecognizerDelegate {

@@ -19,6 +19,10 @@ class DetailsViewController: ViewController, VideoViewController, UICollectionVi
     
     var videoController = VideoController()
     
+    func shouldPlayVideo(_ element: VideoElement) -> Bool {
+        return true
+    }
+    
     let item: HomeItem
     
     var detailsView: DetailsView! { return view as? DetailsView }

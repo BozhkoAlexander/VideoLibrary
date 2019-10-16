@@ -15,6 +15,10 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     
     var videoController = VideoController()
     
+    func shouldPlayVideo(_ element: VideoElement) -> Bool {
+        return true
+    }
+    
     var homeView: HomeView! { return view as? HomeView }
     
     var items = Array<HomeItem>()
