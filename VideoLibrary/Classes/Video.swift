@@ -172,10 +172,10 @@ public class Video: NSObject {
     public func sync(for viewController: UIViewController?) {
         // calculate current video
         var result: (delta: CGFloat, cell: VideoElement)? = nil
-        let presentedVC = UIViewController.presented()
-        var isPresented = viewController == presentedVC
-        if !isPresented, let vc = presentedVC, let viewController = viewController {
-            isPresented = vc.children.contains(viewController)
+        let calculatedVC = UIViewController.presented()
+        var isPresented = viewController == calculatedVC
+        if !isPresented, let calculated = calculatedVC, let viewController = viewController {
+            isPresented = calculated.children.contains(viewController) || viewController.children.last == calculated
         }
         var visibleVideos = Array<VideoCell>()
         
@@ -229,7 +229,9 @@ public class Video: NSObject {
         } else { // there is nothing to play, stop all videos
             loadedKeys.forEach { (link) in
                 guard link != forceVideo, let container = Cache.videos.object(forKey: link as NSString) else { return }
-                container.stop()
+                if container.isPlaying {
+                    container.stop()
+                }
             }
             return
         }
