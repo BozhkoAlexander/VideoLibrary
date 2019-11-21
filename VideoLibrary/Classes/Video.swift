@@ -8,6 +8,7 @@
 
 import UIKit
 import AVKit
+import MediaPlayer
 
 public typealias VideoCell = UIView & VideoElement
 
@@ -19,12 +20,32 @@ public class Video: NSObject {
     
     override internal init() {
         super.init()
+        setupAudio()
         startObservers()
+    }
+    
+    private func setupAudio() {
         if #available(iOS 10.0, *) {
             do {
                 try audio.setCategory(.playback, mode: .default)
             }
             catch {}
+        }
+        if audio.outputVolume >= 1 {
+            guard let window = UIApplication.shared.keyWindow else {
+                return
+            }
+            let view = MPVolumeView(frame: window.bounds)
+            window.insertSubview(view, at: 0)
+            let slider = view.subviews.compactMap({ $0 as? UISlider }).first
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { [weak self] in
+                self?.isNotObservableChange = true
+                slider?.value = 0.95
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    view.removeFromSuperview()
+                }
+            })
+
         }
     }
     
@@ -46,11 +67,17 @@ public class Video: NSObject {
     
     // MARK: - KVO
     
+    private var isNotObservableChange = false
+    
     private var volumeKVO: NSKeyValueObservation! = nil
     
     private func startObservers() {
         volumeKVO = audio.observe(\.outputVolume, options: [.old], changeHandler: { [weak self] (session, change) in
             guard let this = self else { return }
+            if this.isNotObservableChange {
+                this.isNotObservableChange = false
+                return
+            }
             this.isMuted = session.outputVolume == 0
         })
     }
