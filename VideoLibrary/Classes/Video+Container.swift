@@ -58,6 +58,12 @@ public extension Video {
     /** The object which is sent in VideoTimer notification */
     typealias TimerInfo = (Container, String)
     
+    /** Returns video container if exist by video link. */
+    func container(for link: String?) -> Container? {
+        guard let link = link else { return nil }
+        return Cache.videos.value(forKey: link) as? Container
+    }
+    
     /** Video containter */
     class Container: NSObject {
         
