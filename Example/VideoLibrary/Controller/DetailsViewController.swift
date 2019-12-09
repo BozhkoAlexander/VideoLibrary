@@ -9,7 +9,7 @@
 import UIKit
 import VideoLibrary
 
-class DetailsViewController: ViewController, VideoViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class DetailsViewController: ViewController, VideoViewController {
 
     // MARK: - Transitioning
     
@@ -26,7 +26,6 @@ class DetailsViewController: ViewController, VideoViewController, UICollectionVi
     let item: HomeItem
     
     var detailsView: DetailsView! { return view as? DetailsView }
-    var headerView: DetailsItemCell? { return detailsView.collectionView?.visibleCells.compactMap({ $0 as? DetailsItemCell }).first }
     
     // MARK: - Life cycle
     
@@ -50,11 +49,11 @@ class DetailsViewController: ViewController, VideoViewController, UICollectionVi
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        videoController.setup(detailsView.collectionView, for: self)
 
         detailsView.closeButton.addTarget(self, action: #selector(self.closePressed(_:)), for: .touchUpInside)
         enabledInteractiveDismissal()
+        
+        videoController.setup(detailsView, for: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -83,53 +82,23 @@ class DetailsViewController: ViewController, VideoViewController, UICollectionVi
         }
     }
     
-    // MARK: - Collection view delegate & data source
-    
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        videoController.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        videoController.scrollViewDidEndDecelerating(scrollView)
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.bounds.width
-        var height: CGFloat = 0
-        if #available(iOS 11.0, *) {
-            height = view.safeAreaInsets.top
+    @objc func framePressed(_ sender: UIButton) {
+        let state = detailsView.state == 0 ? 1 : 0
+        let videoView = detailsView.videoView!
+        videoView.backgroundColor = .orange
+        let newFrame: CGRect
+        if state == 0 {
+            newFrame = CGRect(x: 0, y: 0, width: detailsView.bounds.width, height: round(9/16 * detailsView.bounds.width))
+        } else {
+            newFrame = CGRect(x: 20, y: 20, width: detailsView.bounds.width - 40, height: round(9/16 * (detailsView.bounds.width - 40)))
         }
-        height += ceil(9/16 * width)
-        return CGSize(width: width, height: height)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return collectionView.dequeueReusableCell(withReuseIdentifier: DetailsItemCell.cellId, for: indexPath)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? DetailsItemCell else { return }
-        cell.item = item
-        Video.shared.play(cell)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        videoController.collectionView(collectionView, didEndDisplaying: cell, forItemAt: indexPath)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        videoController.collectionView(collectionView, didSelectItemAt: indexPath)
-        guard let cell = collectionView.cellForItem(at: indexPath) as? VideoCell else { return }
-        cell.videoView.setupPauseTimer()
         
+        UIView.animate(withDuration: 0.35, animations: {
+            videoView.frame = newFrame
+        }) { [weak self] (_) in
+            self?.detailsView.state = state
+            self?.detailsView.setNeedsLayout()
+        }
     }
 
 }

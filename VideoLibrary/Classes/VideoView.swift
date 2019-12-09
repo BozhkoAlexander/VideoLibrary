@@ -73,6 +73,11 @@ public class VideoView: UIImageView {
         }
     }
     
+    /// Returns video layer.
+    public var videoLayer: AVPlayerLayer! {
+        return layerView.layer as? AVPlayerLayer
+    }
+    
     // MARK: - KVO
     
     private func startObservers() {
@@ -90,7 +95,8 @@ public class VideoView: UIImageView {
     
     // MARK: - Subviews
     
-    public weak var videoLayer: AVPlayerLayer! = nil
+    internal weak var layerView: VideoLayerView! = nil
+    
     public weak var loader: UIActivityIndicatorView! = nil
     public weak var volumeButton: UIButton! = nil
     public weak var fullscreenButton: UIButton! = nil
@@ -98,12 +104,11 @@ public class VideoView: UIImageView {
     public weak var playButton: UIButton! = nil
     
     private func setupVideoLayer() {
-        let layer = AVPlayerLayer(player: nil)
-        layer.videoGravity = .resizeAspect
-        layer.backgroundColor = UIColor.black.cgColor
+        let view = VideoLayerView()
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        self.layer.addSublayer(layer)
-        self.videoLayer = layer
+        addSubview(view)
+        layerView = view
     }
     
     private func setupLoader() {
@@ -415,9 +420,6 @@ public class VideoView: UIImageView {
         super.layoutSubviews()
         
         let offset: CGFloat = 18
-        
-        videoLayer.frame = layer.bounds
-        videoLayer.removeAllAnimations()
 
         loader.center.x = bounds.midX
         loader.center.y = bounds.midY
