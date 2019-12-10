@@ -62,6 +62,18 @@ public class VideoView: UIImageView {
     
     public var status: Video.Status = .empty
     
+    /// Shows if there is should be controls in the video view.
+    public var isControlsHidden: Bool = false {
+        didSet {
+            let value = isControlsHidden
+            loader.isHidden = value
+            volumeButton.isHidden = value
+            fullscreenButton.isHidden = value
+            timeLabel.isHidden = value
+            playButton.isHidden = value
+        }
+    }
+    
     /// Background color of the video layer (visible only when video is playing or paused.
     public var videoLayerBackgroundColor: UIColor? {
         get {
