@@ -27,7 +27,7 @@ public class Video: NSObject {
     private func setupAudio() {
         if #available(iOS 10.0, *) {
             do {
-                try audio.setCategory(.playback, mode: .default)
+                try audio.setCategory(.ambient, mode: .default)
             }
             catch {}
         }
@@ -53,10 +53,26 @@ public class Video: NSObject {
     
     private var audio: AVAudioSession { return AVAudioSession.sharedInstance() }
     
+    /// Shows if the audio sessios is active now. Can be activated at any moment, but should be deactived only when all videos paused/stopped.
+    internal var isActiveAudio: Bool = false {
+        didSet {
+            guard isActiveAudio != oldValue else { return }
+            do {
+                if #available(iOS 10.0, *) {
+                    try audio.setCategory(isActiveAudio ? .playback : .ambient, mode: .default)
+                }
+                try audio.setActive(isActiveAudio, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("[AV] Error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     public var isMuted: Bool = true
     {
         didSet {
             guard isMuted != oldValue else { return }
+            if !isMuted { isActiveAudio = true }
             loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) }).forEach({ container in
                 container.player.isMuted = isMuted
             })
@@ -171,6 +187,8 @@ public class Video: NSObject {
             element.videoView.update(status: .paused, container: nil)
             element.video(element, didChangeStatus: .paused, withContainer: nil)
         }
+        
+        deactivateAudioIfNeeded()
     }
     
     /** Stop video after it ends */
@@ -182,7 +200,8 @@ public class Video: NSObject {
         guard let element = controller?.element(for: link) else { return }
         element.videoView.update(status: .ended, container: nil)
         element.video(element, didChangeStatus: .ended, withContainer: nil)
-
+        
+        deactivateAudioIfNeeded()
     }
     
     /** Buffering for a video */
@@ -307,6 +326,7 @@ public class Video: NSObject {
         }
         if let container = container {
             if cell.videoView.autoplay || cell.videoView.videoLink == forceVideo {
+                if !isMuted { isActiveAudio = true }
                 container.play()
                 cell.videoView.setContainer(container)
                 let status = container.bufferingStatus() ?? .loading
@@ -359,6 +379,8 @@ public class Video: NSObject {
             guard let link = ($0.item.asset as? AVURLAsset)?.url.absoluteString else { return }
             NotificationCenter.default.post(name: .VideoPausePressed, object: link)
         })
+        
+        deactivateAudioIfNeeded()
     }
     
     /** Call when the video view did end displaying and it needs to stop a played video */
@@ -369,6 +391,8 @@ public class Video: NSObject {
             guard let link = ($0.item.asset as? AVURLAsset)?.url.absoluteString else { return }
             NotificationCenter.default.post(name: .VideoStop, object: link)
         })
+        
+        deactivateAudioIfNeeded()
     }
     
     /** Stops video by link, doesn't affect any other videos. */
@@ -376,6 +400,17 @@ public class Video: NSObject {
         guard let link = link, let container = Cache.videos.object(forKey: link as NSString) else { return }
         container.stop()
         NotificationCenter.default.post(name: .VideoStop, object: link)
+        
+        deactivateAudioIfNeeded()
+    }
+    
+    internal func deactivateAudioIfNeeded() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let this = self else { return }
+            let canBeDeactivated = this.loadedKeys.compactMap({ Cache.videos.object(forKey: $0 as NSString) }).filter({ $0.isPlaying }).isEmpty
+            guard canBeDeactivated else { return }
+            this.isActiveAudio = false
+        }
     }
     
 }

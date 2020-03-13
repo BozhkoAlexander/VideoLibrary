@@ -79,7 +79,8 @@ class HomeViewController: ViewController, VideoViewController, UICollectionViewD
     // MARK: - UI actions
     
     @objc func switchPage() {
-        AppDelegate.shared.restart()
+//        AppDelegate.shared.restart()
+        Video.shared.isMuted = !Video.shared.isMuted
     }
     
     @objc func detailsPage() {
