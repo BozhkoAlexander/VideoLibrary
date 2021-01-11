@@ -22,7 +22,7 @@ public extension UIView {
     /** Send video view from list to details */
     func replace(videoView: VideoView) {
         guard var this = self as? VideoCell else { return }
-        this.videoView.removeFromSuperview()
+        this.videoView?.removeFromSuperview()
         var view: UIView = this
         if let contentView = (this as? UICollectionViewCell)?.contentView {
             view = contentView

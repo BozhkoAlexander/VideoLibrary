@@ -63,9 +63,9 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     // MARK: Public methods
     
     public func element(for video: String?) -> VideoElement? {
-        if let cell = scrollView?.visibleVideoCells.filter({ $0.videoView.videoLink == video }).first {
+        if let cell = scrollView?.visibleVideoCells.filter({ $0.videoView?.videoLink == video }).first {
             return cell
-        } else if videoView?.videoView.videoLink == video {
+        } else if videoView?.videoView?.videoLink == video {
             return videoView
         }
         return nil
@@ -110,9 +110,9 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
         guard let link = notification.object as? String else { return }
         var cell: VideoCell? = nil
         if let tableView = scrollView as? UITableView {
-            cell = tableView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLink == link }).first
+            cell = tableView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView?.videoLink == link }).first
         } else if let collectionView = scrollView as? UICollectionView {
-            cell = collectionView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView.videoLink == link }).first
+            cell = collectionView.visibleCells.compactMap({ $0 as? VideoCell }).filter({ $0.videoView?.videoLink == link }).first
         }
         Video.shared.pause(link, cell: cell, for: self)
     }
@@ -171,7 +171,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let cell = cell as? VideoCell, let link = cell.videoView?.videoLink {
             // if the video was not paused by user then we have to stop it, otherwise we have to pause it.
-            if cell.videoView.status == .playing {
+            if cell.videoView?.status == .playing {
                 Video.shared.stop()
             } else {
                 Video.shared.pause(link, cell: cell, for: self)
@@ -187,7 +187,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     
     /** Call in tablView didEndDisplaying */
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let cell = cell as? VideoCell, let link = cell.videoView.videoLink {
+        if let cell = cell as? VideoCell, let link = cell.videoView?.videoLink {
             Video.shared.pause(link, cell: cell, for: self)
         }
     }
@@ -195,7 +195,7 @@ public class VideoController: NSObject, UICollectionViewDelegate, UITableViewDel
     /** Call in tableView didSelectRow */
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let cell = tableView.cellForRow(at: indexPath) as? VideoCell else { return }
-        cell.videoView.setupControlsTimer()
+        cell.videoView?.setupControlsTimer()
     }
     
 }

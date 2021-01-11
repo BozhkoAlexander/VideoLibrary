@@ -177,14 +177,14 @@ public class Video: NSObject {
         if let container = Cache.videos.object(forKey: link as NSString) {
             container.pause()
         }
-        if let cell = cell {
+        if let cell = cell, let videoView = cell.videoView {
             // video did end displaying
-            guard cell.videoView.status != .paused else { return }
-            cell.videoView.update(status: .stopped, container: nil)
+            guard videoView.status != .paused else { return }
+            videoView.update(status: .stopped, container: nil)
             cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
-        } else if let element = controller?.element(for: link) {
+        } else if let element = controller?.element(for: link), let videoView = element.videoView {
             // video paused by play button
-            element.videoView.update(status: .paused, container: nil)
+            videoView.update(status: .paused, container: nil)
             element.video(element, didChangeStatus: .paused, withContainer: nil)
         }
         
@@ -208,8 +208,8 @@ public class Video: NSObject {
     public func buffering(_ container: Container, for controller: VideoController?) {
         guard let status = container.bufferingStatus() else { return }
         let link = (container.player.currentItem?.asset as? AVURLAsset)?.url.absoluteString
-        if let element = controller?.element(for: link) {
-            element.videoView.update(status: status, container: container)
+        if let element = controller?.element(for: link), let videoView = element.videoView {
+            videoView.update(status: status, container: container)
             element.video(element, didChangeStatus: status, withContainer: container)
         }
     }
@@ -226,7 +226,7 @@ public class Video: NSObject {
         var visibleVideos = Array<VideoCell>()
         
         if let element = (viewController as? VideoViewController)?.videoController.videoView, isPresented { // if there is no scroll view, just simple video element in the view
-            if element.videoView.autoplay {
+            if element.videoView?.autoplay == true {
                 result = (delta: 0, cell: element)
             }
         } else if let scrollView = (viewController as? VideoViewController)?.videoController.scrollView { // if there is scroll view
@@ -249,7 +249,8 @@ public class Video: NSObject {
             // if there is no force link (usual way)
             if result == nil && isPresented {
                 let results = visibleVideos.compactMap({ cell -> (delta: CGFloat, cell: VideoElement)? in
-                    guard cell.videoView?.videoLink != nil && cell.videoView.autoplay else { return nil }
+                    guard let videoView = cell.videoView else { return nil }
+                    guard videoView.videoLink != nil && videoView.autoplay else { return nil }
                     let videoFrame = cell.frame
                     // Check if the whole cell is on the screen, if needed
                     if let controller = (viewController as? VideoViewController)?.videoController, controller.autoplayWhenWholeCellOnScreen {
@@ -284,17 +285,18 @@ public class Video: NSObject {
         
         // try to get current loaded container
         var current: Container? = nil
-        if let link = result?.cell.videoView.videoLink {
+        if let link = result?.cell.videoView?.videoLink {
             current = Cache.videos.object(forKey: link as NSString)
         }
         // stop all videos except current
         visibleVideos.forEach({ cell in
+            guard let videoView = cell.videoView else { return }
             guard result == nil || cell.videoView != result?.cell.videoView else { return }
-            guard cell.videoView.status != .paused else { return }
-            if let link = cell.videoView.videoLink, let container = Cache.videos.object(forKey: link as NSString) {
+            guard videoView.status != .paused else { return }
+            if let link = videoView.videoLink, let container = Cache.videos.object(forKey: link as NSString) {
                 container.stop()
             }
-            cell.videoView.update(status: .stopped, container: nil)
+            videoView.update(status: .stopped, container: nil)
             cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
         })
         loadedKeys.forEach { (link) in
@@ -305,7 +307,7 @@ public class Video: NSObject {
         }
         // play or load
         guard let cell = result?.cell, let delta = result?.delta else { return }
-        guard cell.videoView.status != .paused else { return }
+        guard cell.videoView?.status != .paused else { return }
         if let videoVC = viewController as? VideoViewController {
             guard videoVC.shouldPlayVideo(cell) else { return }
         }
@@ -317,36 +319,38 @@ public class Video: NSObject {
             // Stop all other videos (in case if some of them are paused or played.
             scrollView.visibleVideoCells.forEach({
                 guard $0 as UIView != cell as UIView else { return }
-                if let link = $0.videoView.videoLink, let container = Cache.videos.object(forKey: link as NSString) {
+                guard let videoView = $0.videoView else { return }
+                if let link = videoView.videoLink, let container = Cache.videos.object(forKey: link as NSString) {
                     container.stop()
                 }
-                $0.videoView.update(status: .stopped, container: nil)
+                videoView.update(status: .stopped, container: nil)
                 $0.video($0, didChangeStatus: .stopped, withContainer: nil)
             })
         }
         if let container = container {
-            if cell.videoView.autoplay || cell.videoView.videoLink == forceVideo {
+            guard let videoView = cell.videoView else { return }
+            if videoView.autoplay || videoView.videoLink == forceVideo {
                 if !isMuted { isActiveAudio = true }
                 container.play()
-                cell.videoView.setContainer(container)
+                videoView.setContainer(container)
                 let status = container.bufferingStatus() ?? .loading
-                cell.videoView.update(status: status, container: container)
+                videoView.update(status: status, container: container)
                 cell.video(cell, didChangeStatus: status, withContainer: nil)
             } else {
-                cell.videoView.update(status: .stopped, container: container)
+                videoView.update(status: .stopped, container: container)
                 cell.video(cell, didChangeStatus: .stopped, withContainer: nil)
             }
-        } else if let link = cell.videoView.videoLink {
+        } else if let videoView = cell.videoView, let link = videoView.videoLink {
             if !loadedKeys.contains(link) {
-                cell.videoView.update(status: .loading, container: nil)
+                videoView.update(status: .loading, container: nil)
                 cell.video(cell, didChangeStatus: .loading, withContainer: nil)
             }
-            cell.videoView.error = nil
+            videoView.error = nil
             self.load(link) { [weak self] (container, cached, error) in
                 // TODO: - send error to next methods
-                cell.videoView.error = error
+                videoView.error = error
                 guard container != nil else {
-                    cell.videoView.update(status: .empty, container: nil)
+                    videoView.update(status: .empty, container: nil)
                     cell.video(cell, didChangeStatus: .empty, withContainer: nil)
                     return
                 }
