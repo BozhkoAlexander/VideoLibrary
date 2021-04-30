@@ -36,9 +36,9 @@ typealias HomeBlock = (Array<HomeItem>, Error?) -> Void
 
 public class HomeItem: NSObject {
     
-    @objc var video: String? = nil
-    @objc var image: String? = nil
-    @objc var title: String? = nil
+    @objc dynamic var video: String? = nil
+    @objc dynamic var image: String? = nil
+    @objc dynamic var title: String? = nil
     var autoplay: Bool = true
     
     init(video: String?, image: String?, title: String?, autoplay: Bool) {

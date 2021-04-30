@@ -7,7 +7,7 @@
 
 import UIKit
 
-public protocol VideoViewDelegate: class {
+public protocol VideoViewDelegate: AnyObject {
     
     /// Calls when the state of the video view has changed.
     func videoView(_ videoView: BetaVideoView, didChangedState state: BetaVideoView.State)
